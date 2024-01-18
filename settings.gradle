@@ -1,0 +1,4 @@
+rootProject.name = 'taxi-hailer-app'
+include 'driverservice'
+include 'passengerservice'
+
