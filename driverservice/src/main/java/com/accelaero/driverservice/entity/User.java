@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name= "user_account")
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 public class User {
     @Id
@@ -35,7 +37,7 @@ public class User {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "registration_date", insertable = false)
+    @Column(name = "registration_date")
     @CreatedDate
     private Date registrationDate;
 
