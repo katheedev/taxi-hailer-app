@@ -38,4 +38,11 @@ public class User {
     @Type(type = "timestamp")
     private Date registrationDate;
 
+    @Column(name = "enabled",columnDefinition = "boolean default false")
+    private boolean enabled;
+
+
+
+
+
 }

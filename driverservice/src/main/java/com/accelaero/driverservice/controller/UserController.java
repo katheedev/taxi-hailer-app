@@ -1,47 +1,68 @@
 package com.accelaero.driverservice.controller;
 
-import com.accelaero.driverservice.exception.UserAlreadyExistException;
+import com.accelaero.driverservice.entity.VerificationToken;
 import com.accelaero.driverservice.requestdto.UserRegisterRequest;
-import com.accelaero.driverservice.serviceimpl.UserService;
+import com.accelaero.driverservice.service.event.OnRegistrationCompleteEvent;
+import com.accelaero.driverservice.service.serviceimpl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import com.accelaero.driverservice.entity.User;
+import org.springframework.web.context.request.WebRequest;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 
 @Controller
 @RequestMapping("/api")
 public class UserController {
 
     public final UserService userService;
+    public final ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public UserController(UserService userService){
+    public UserController(ApplicationEventPublisher eventPublisher, UserService userService){
+        this.eventPublisher = eventPublisher;
         this.userService = userService;
     }
 
 
+
     @PostMapping("/registration")
     public ResponseEntity<User> registerUserAccount(
+            @RequestBody @Valid UserRegisterRequest userDto,HttpServletRequest request,Errors errors) {
+             User registeredUser = userService.registerNewUserAccount(userDto);
+        String appUrl = request.getContextPath();
+        eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registeredUser,
+                request.getLocale(), appUrl));
 
-            @RequestBody @Valid UserRegisterRequest userDto,
-            HttpServletRequest request,
-            Errors errors) {
-        User registered = null;
-        try {
-             registered = userService.registerNewUserAccount(userDto);
-        } catch (UserAlreadyExistException uaeEx) {
-            return new ResponseEntity(registered,HttpStatus.CONFLICT);
+        return new ResponseEntity<>(registeredUser,HttpStatus.CREATED);
+
+    }
+    @GetMapping("/registrationConfirm")
+    public ResponseEntity<String> confirmRegistration
+            (WebRequest request, @RequestParam("token") String token) {
+
+        if(token==null){
+            return new ResponseEntity<>("Empty verification token",HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(registered,HttpStatus.CREATED);
+        VerificationToken verificationToken = userService.getVerificationToken(token);
+        if (verificationToken == null) {
+            return new ResponseEntity<>("Invalid verification token",HttpStatus.CONFLICT);
+        }
+        else{
+            User user = verificationToken.getUser();
+            user.setEnabled(true);
+            userService.saveRegisteredUser(user);
+            return new ResponseEntity<>("Email verified successfully",HttpStatus.OK);
+        }
+
 
     }
 }
