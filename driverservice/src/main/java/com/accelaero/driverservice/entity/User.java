@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -28,20 +29,18 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "phone")
     private String phone;
 
     @Column(name = "registration_date", insertable = false)
-    @Type(type = "timestamp")
+    @CreatedDate
     private Date registrationDate;
 
     @Column(name = "enabled",columnDefinition = "boolean default false")
     private boolean enabled;
-
-
 
 
 

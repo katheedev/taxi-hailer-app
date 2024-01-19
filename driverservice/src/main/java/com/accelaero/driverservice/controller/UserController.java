@@ -1,7 +1,10 @@
 package com.accelaero.driverservice.controller;
 
 import com.accelaero.driverservice.entity.VerificationToken;
+import com.accelaero.driverservice.requestdto.UserUpdateRequest;
 import com.accelaero.driverservice.requestdto.UserRegisterRequest;
+import com.accelaero.driverservice.responsedto.UserResponse;
+import com.accelaero.driverservice.service.IUserService;
 import com.accelaero.driverservice.service.event.OnRegistrationCompleteEvent;
 import com.accelaero.driverservice.service.serviceimpl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +22,10 @@ import javax.validation.Valid;
 
 
 @Controller
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserController {
 
-    public final UserService userService;
+    public final IUserService userService;
     public final ApplicationEventPublisher eventPublisher;
 
     @Autowired
@@ -62,7 +65,14 @@ public class UserController {
             userService.saveRegisteredUser(user);
             return new ResponseEntity<>("Email verified successfully",HttpStatus.OK);
         }
+    }
 
+    @PostMapping("/edit")
+    public ResponseEntity<UserResponse> editUserAccount(
+            @RequestBody @Valid UserUpdateRequest userDto, HttpServletRequest request, Errors errors) {
+
+       UserResponse userResponse = userService.editUser(userDto);
+        return new ResponseEntity<>(userResponse,HttpStatus.OK);
+    }
 
     }
-}
