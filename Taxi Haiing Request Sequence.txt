@@ -1,0 +1,40 @@
+title Taxi hailing Request
+
+
+participant PassengerApp
+participant PassengerService
+participant KafkaMQ
+participant DriverService
+participant DriverApp
+
+autonumber
+PassengerApp->PassengerService: Login to the passenger app
+PassengerApp->PassengerService: Hail a trip
+PassengerApp->PassengerService: Choose Pickup location
+PassengerApp->PassengerService: Choose destination
+PassengerService->KafkaMQ: Publish trip request
+
+KafkaMQ->DriverService: Listen to hailing request
+
+alt Some drivers accept the request
+    loop Each driver
+        DriverApp->DriverService: Accept hailing request
+        DriverService->KafkaMQ: Publish accepted request
+    end
+    KafkaMQ->DriverService: Inform other drivers trip is taken
+    loop Other drivers
+        DriverService->DriverApp: Notify trip taken by another driver
+    end
+    KafkaMQ->PassengerService: Receive accepted request
+    PassengerService->PassengerApp: Show ongoing trip details including driver and car details
+else All drivers reject the request
+    DriverService->KafkaMQ: Publish rejected request
+    KafkaMQ->PassengerService: Receive rejected request
+    PassengerService->PassengerApp: Display message that all drivers are busy
+end
+
+autonumber
+DriverApp->DriverService: Complete ongoing trip (from driver app)
+DriverService->KafkaMQ: Notify trip completion
+KafkaMQ->PassengerService: Receive trip completion notification
+PassengerService->PassengerApp: Show amount to be paid
