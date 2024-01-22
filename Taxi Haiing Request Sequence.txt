@@ -1,5 +1,4 @@
-title Taxi hailing Request
-
+title Taxi Hailing Request
 
 participant PassengerApp
 participant PassengerService
@@ -16,25 +15,44 @@ PassengerService->KafkaMQ: Publish trip request
 
 KafkaMQ->DriverService: Listen to hailing request
 
-alt Some drivers accept the request
-    loop Each driver
-        DriverApp->DriverService: Accept hailing request
-        DriverService->KafkaMQ: Publish accepted request
-    end
-    KafkaMQ->DriverService: Inform other drivers trip is taken
+autonumber
+DriverService->DriverService: Find available drivers
+
+  loop avaialble drivers
+        DriverService->DriverApp: Notify available drivers of hailing request
+
+  end
+alt One driver accepts the request
+    DriverApp->DriverService: Accept hailing request
+    DriverService->KafkaMQ: Publish accepted request
     loop Other drivers
-        DriverService->DriverApp: Notify trip taken by another driver
+        DriverService->DriverApp: Notify trip assigned to another driver
     end
     KafkaMQ->PassengerService: Receive accepted request
-    PassengerService->PassengerApp: Show ongoing trip details including driver and car details
-else All drivers reject the request
+    PassengerService->PassengerApp: Wait for the driver
+
+    note over DriverApp, PassengerApp: Meetup between driver and passenger\nStart the trip
+
+    DriverApp->DriverService: Start the trip
+    DriverService->KafkaMQ: Notify trip started
+    KafkaMQ->PassengerService: Receive trip started notification
+    PassengerService->PassengerApp: Show ongoing trip details
+else No driver accepts the request
     DriverService->KafkaMQ: Publish rejected request
     KafkaMQ->PassengerService: Receive rejected request
     PassengerService->PassengerApp: Display message that all drivers are busy
 end
 
-autonumber
-DriverApp->DriverService: Complete ongoing trip (from driver app)
-DriverService->KafkaMQ: Notify trip completion
-KafkaMQ->PassengerService: Receive trip completion notification
-PassengerService->PassengerApp: Show amount to be paid
+
+DriverApp->DriverService: End the trip
+DriverService->KafkaMQ: Notify trip ended
+KafkaMQ->PassengerService: Receive trip ended notification
+PassengerService->PassengerApp: Send amount to be paid
+
+
+note over PassengerApp, DriverApp: Passenger Hands over the cash
+
+DriverApp->DriverService: Complete the trip
+DriverService->KafkaMQ: Notify trip completed
+KafkaMQ->PassengerService: Receive trip completed notification
+PassengerService->PassengerApp: Send ended trip details.
