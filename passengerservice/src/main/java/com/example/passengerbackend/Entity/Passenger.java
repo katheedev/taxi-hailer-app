@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,6 +34,12 @@ public class Passenger {
 
     @Column(name = "enabled",columnDefinition = "boolean default false")
     private boolean enabled;
+
+    @OneToMany(mappedBy = "passenger", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TripRequest> tripRequests;
+
+    @Column(name = "status")
+    private int status;
 
     public Passenger(Long id, String firstName, String lastName, String email, String password) {
         this.id = id;

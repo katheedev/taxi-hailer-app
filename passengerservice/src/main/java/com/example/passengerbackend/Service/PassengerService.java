@@ -4,7 +4,7 @@ import com.example.passengerbackend.RequestDTO.RegisterReqDTO;
 import com.example.passengerbackend.Entity.Passenger;
 import com.example.passengerbackend.Entity.VerificationToken;
 
-public interface ImpPassengerService {
+public interface PassengerService {
     Passenger registerPassenger(RegisterReqDTO registerReqDTO);
 
     void saveRegisteredPassenger(Passenger passenger);
@@ -12,4 +12,6 @@ public interface ImpPassengerService {
     void createVerificationToken(Passenger passenger, String token);
 
     VerificationToken getVerificationToken(String VerificationToken);
+
+    Passenger getLoggedInUser();
 }

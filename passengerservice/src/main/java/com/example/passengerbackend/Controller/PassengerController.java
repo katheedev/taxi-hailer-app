@@ -4,8 +4,8 @@ import com.example.passengerbackend.Entity.VerificationToken;
 import com.example.passengerbackend.RequestDTO.RegisterReqDTO;
 import com.example.passengerbackend.Entity.Passenger;
 import com.example.passengerbackend.Exception.PassengerAlreadyExist;
-import com.example.passengerbackend.Service.ImpPassengerService;
-import com.example.passengerbackend.Service.Implement.PassengerService;
+import com.example.passengerbackend.Service.Implement.PassengerServiceImpl;
+import com.example.passengerbackend.Service.PassengerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +22,11 @@ import javax.validation.Valid;
 @RequestMapping("api/v1/passenger")
 public class PassengerController {
 
-    @Autowired
-    private ImpPassengerService impPassengerService;
+    private final PassengerService passengerService;
 
     @Autowired
-    public PassengerController(PassengerService impPassengerService){
-        this.impPassengerService = impPassengerService;
+    public PassengerController(PassengerServiceImpl passengerServiceImpl){
+        this.passengerService = passengerServiceImpl;
     }
 
     @PostMapping(path = "/registration")
@@ -35,7 +34,7 @@ public class PassengerController {
                                                 Errors errors) {
          Passenger registered = null;
          try {
-             registered = impPassengerService.registerPassenger(registerReqDTO);
+             registered = passengerService.registerPassenger(registerReqDTO);
          } catch (PassengerAlreadyExist uaeEx) {
              return new ResponseEntity(registered,HttpStatus.CONFLICT);
          }
@@ -51,14 +50,14 @@ public class PassengerController {
             return new ResponseEntity<>("Empty verification token",HttpStatus.BAD_REQUEST);
         }
 
-        VerificationToken verificationToken = impPassengerService.getVerificationToken(token);
+        VerificationToken verificationToken = passengerService.getVerificationToken(token);
         if (verificationToken == null) {
             return new ResponseEntity<>("Invalid verification token",HttpStatus.CONFLICT);
         }
         else{
             Passenger passenger = verificationToken.getPassenger();
             passenger.setEnabled(true);
-            impPassengerService.saveRegisteredPassenger(passenger);
+            passengerService.saveRegisteredPassenger(passenger);
             return new ResponseEntity<>("Email verified successfully",HttpStatus.OK);
         }
     }

@@ -1,4 +1,4 @@
-package com.accelaero.driverservice.status;
+package com.example.passengerbackend.status;
 
 public enum PassengerStatus {
     IDLE(0),

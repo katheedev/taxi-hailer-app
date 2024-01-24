@@ -1,4 +1,4 @@
-package com.accelaero.driverservice.producer;
+package com.example.passengerbackend.producer;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

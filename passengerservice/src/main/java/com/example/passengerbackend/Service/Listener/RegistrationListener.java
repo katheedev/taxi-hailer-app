@@ -2,11 +2,10 @@ package com.example.passengerbackend.Service.Listener;
 
 import com.example.passengerbackend.Entity.Passenger;
 import com.example.passengerbackend.Service.Event.RegistrationComplete;
-import com.example.passengerbackend.Service.ImpPassengerService;
+import com.example.passengerbackend.Service.PassengerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -15,7 +14,7 @@ import java.util.UUID;
 public class RegistrationListener implements ApplicationListener<RegistrationComplete> {
 
     @Autowired
-    private ImpPassengerService impPassengerService;
+    private PassengerService passengerService;
 
 //    @Autowired
 //    private JavaMailSender mailSender;
@@ -28,7 +27,7 @@ public class RegistrationListener implements ApplicationListener<RegistrationCom
     private void confirmRegistration(RegistrationComplete event) {
         Passenger passenger = event.getPassenger();
         String token = UUID.randomUUID().toString();
-        impPassengerService.createVerificationToken(passenger, token);
+        passengerService.createVerificationToken(passenger, token);
 
         String recipientAddress = passenger.getEmail();
         String subject = "Registration Confirmation";
