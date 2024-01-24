@@ -1,6 +1,6 @@
 package com.example.passengerbackend.consumer;
 
-import com.example.passengerbackend.producer.Order;
+import com.example.passengerbackend.Entity.TripRequest;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -13,7 +13,6 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,9 +29,9 @@ public class OrderEventConsumerConfig {
     private String groupId;
 
     @Bean("NotificationConsumerFactory")
-    public ConsumerFactory<String, Order> createOrderConsumerFactory() {
+    public ConsumerFactory<String, TripRequest> createOrderConsumerFactory() {
 
-        JsonDeserializer<Order> deserializer = new JsonDeserializer<>(Order.class);
+        JsonDeserializer<TripRequest> deserializer = new JsonDeserializer<>(TripRequest.class);
         deserializer.setRemoveTypeHeaders(false);
         deserializer.addTrustedPackages("*");
         deserializer.setUseTypeMapperForKey(true);
@@ -50,8 +49,8 @@ public class OrderEventConsumerConfig {
     }
 
     @Bean("NotificationContainerFactory")
-    public ConcurrentKafkaListenerContainerFactory<String, Order> createOrderKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, Order> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, TripRequest> createOrderKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, TripRequest> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(createOrderConsumerFactory());
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
