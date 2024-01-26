@@ -8,12 +8,12 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-@Service("NotificationService")
+@Service("TripRequestService")
 public class TripRequestEventConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(TripRequestEventConsumer.class);
 
-    @KafkaListener(topics = "${spring.kafka.order.topic.create-order}", containerFactory="NotificationContainerFactory")
+    @KafkaListener(topics = "${spring.kafka.order.topic.create-order}", containerFactory="TripRequestContainerFactory")
     public void createOrderListener(@Payload TripRequestResDTO tripRequestResDTO, Acknowledgment ack) {
         log.info("Notification service received order {} ", tripRequestResDTO.getDestination().getDescription());
         ack.acknowledge();

@@ -1,15 +1,11 @@
 package com.example.passengerbackend.Controller;
 
 
-import com.example.passengerbackend.Entity.Passenger;
-import com.example.passengerbackend.Entity.TripRequest;
-import com.example.passengerbackend.Exception.PassengerAlreadyExist;
-import com.example.passengerbackend.RequestDTO.RegisterReqDTO;
 import com.example.passengerbackend.RequestDTO.TripRequestReqDTO;
 import com.example.passengerbackend.ResponseDTO.TripRequestResDTO;
 import com.example.passengerbackend.Service.PassengerService;
 import com.example.passengerbackend.Service.TripService;
-import com.example.passengerbackend.producer.TripRequestEventProducer;
+import com.example.passengerbackend.producer.EventProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,20 +24,20 @@ public class TripController {
     private final TripService tripService;
     private final PassengerService passengerService;
 
-    private final TripRequestEventProducer tripRequestEventProducer;
+    private final EventProducer<TripRequestResDTO> tripEventProducer;
 
     @Autowired
-    public TripController(TripService tripService, PassengerService passengerService, TripRequestEventProducer tripRequestEventProducer) {
+    public TripController(TripService tripService, PassengerService passengerService, EventProducer<TripRequestResDTO> eventProducer) {
         this.tripService = tripService;
         this.passengerService = passengerService;
-        this.tripRequestEventProducer = tripRequestEventProducer;
+        this.tripEventProducer = eventProducer;
     }
     @PostMapping("/create")
     public ResponseEntity<TripRequestResDTO> saveTripRequest(@RequestBody @Valid TripRequestReqDTO tripRequestReqDTO, HttpServletRequest request,
                                                              Errors errors) throws ExecutionException, InterruptedException {
 
         TripRequestResDTO tripRequestRes=  tripService.createTripRequest(tripRequestReqDTO);
-        tripRequestEventProducer.sendCreateTripRequestEvent(tripRequestRes);
+        tripEventProducer.send(tripRequestRes,"create-order");
         return new ResponseEntity<>(tripRequestRes, HttpStatus.CREATED);
     }
 }

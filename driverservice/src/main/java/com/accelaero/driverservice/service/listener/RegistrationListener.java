@@ -1,9 +1,10 @@
 package com.accelaero.driverservice.service.listener;
 
 import com.accelaero.driverservice.entity.User;
-import com.accelaero.driverservice.service.IUserService;
+import com.accelaero.driverservice.service.UserService;
 import com.accelaero.driverservice.service.event.OnRegistrationCompleteEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -16,7 +17,7 @@ public class RegistrationListener implements
         ApplicationListener<OnRegistrationCompleteEvent> {
 
     @Autowired
-    private IUserService userService;
+    private UserService userService;
 
 
     @Autowired

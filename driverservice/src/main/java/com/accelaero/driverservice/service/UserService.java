@@ -6,7 +6,7 @@ import com.accelaero.driverservice.requestdto.UserUpdateRequest;
 import com.accelaero.driverservice.requestdto.UserRegisterRequest;
 import com.accelaero.driverservice.responsedto.UserResponse;
 
-public interface IUserService {
+public interface UserService {
     User registerNewUserAccount(UserRegisterRequest userDto);
 
     User getUser(String verificationToken);

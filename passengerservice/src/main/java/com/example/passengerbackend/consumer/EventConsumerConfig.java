@@ -1,9 +1,8 @@
-package com.accelaero.driverservice.consumer;
+package com.example.passengerbackend.consumer;
 
-import com.accelaero.driverservice.responsedto.TripRequestResDTO;
+import com.example.passengerbackend.RequestDTO.TripResponseReqDto;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,11 +15,10 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @EnableKafka
 @Configuration("NotificationConfiguration")
-public class TripRequestEventConsumerConfig {
+public class EventConsumerConfig {
 
     @Value("${spring.kafka.order.bootstrap-servers}")
     private String bootstrapServers;
@@ -28,10 +26,9 @@ public class TripRequestEventConsumerConfig {
     @Value("${spring.kafka.order.consumer.group-id.notification}")
     private String groupId;
 
-    @Bean("NotificationConsumerFactory")
-    public ConsumerFactory<String, TripRequestResDTO> createOrderConsumerFactory() {
-
-        JsonDeserializer<TripRequestResDTO> deserializer = new JsonDeserializer<>(TripRequestResDTO.class);
+    @Bean
+    public <V> ConsumerFactory<String, V> createConsumerFactory(Class<V> valueClass) {
+        JsonDeserializer<V> deserializer = new JsonDeserializer<>(valueClass);
         deserializer.setRemoveTypeHeaders(false);
         deserializer.addTrustedPackages("*");
         deserializer.setUseTypeMapperForKey(true);
@@ -39,21 +36,25 @@ public class TripRequestEventConsumerConfig {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        props.put(ConsumerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 
-        return new DefaultKafkaConsumerFactory<>(props,new StringDeserializer(),
-                deserializer);
+        return  new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
     }
 
-    @Bean("NotificationContainerFactory")
-    public ConcurrentKafkaListenerContainerFactory<String, TripRequestResDTO> createOrderKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, TripRequestResDTO> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(createOrderConsumerFactory());
+    @Bean
+    public <V> ConcurrentKafkaListenerContainerFactory<String, V> createKafkaListenerContainerFactory(Class<V> valueClass) {
+        ConcurrentKafkaListenerContainerFactory<String , V> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(createConsumerFactory(valueClass));
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        // Add other configurations as needed
         return factory;
     }
+
+    @Bean("TripResponseContainerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, TripResponseReqDto> orderKafkaListenerContainerFactory() {
+        return createKafkaListenerContainerFactory(TripResponseReqDto.class);
+    }
+
 }

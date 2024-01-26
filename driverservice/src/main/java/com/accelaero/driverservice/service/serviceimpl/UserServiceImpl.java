@@ -8,7 +8,6 @@ import com.accelaero.driverservice.repository.VerficationTokenRegistry;
 import com.accelaero.driverservice.requestdto.UserUpdateRequest;
 import com.accelaero.driverservice.requestdto.UserRegisterRequest;
 import com.accelaero.driverservice.responsedto.UserResponse;
-import com.accelaero.driverservice.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +18,7 @@ import javax.transaction.Transactional;
 
 @Service
 @Transactional
- public class UserService implements IUserService {
+ public class UserServiceImpl implements com.accelaero.driverservice.service.UserService {
     @Autowired
     private UserRepository userRepository;
 

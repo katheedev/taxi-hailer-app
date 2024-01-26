@@ -4,9 +4,9 @@ import com.accelaero.driverservice.entity.VerificationToken;
 import com.accelaero.driverservice.requestdto.UserUpdateRequest;
 import com.accelaero.driverservice.requestdto.UserRegisterRequest;
 import com.accelaero.driverservice.responsedto.UserResponse;
-import com.accelaero.driverservice.service.IUserService;
+import com.accelaero.driverservice.service.UserService;
 import com.accelaero.driverservice.service.event.OnRegistrationCompleteEvent;
-import com.accelaero.driverservice.service.serviceimpl.UserService;
+import com.accelaero.driverservice.service.serviceimpl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -25,11 +25,11 @@ import javax.validation.Valid;
 @RequestMapping("/api/user")
 public class UserController {
 
-    public final IUserService userService;
+    public final UserService userService;
     public final ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public UserController(ApplicationEventPublisher eventPublisher, UserService userService){
+    public UserController(ApplicationEventPublisher eventPublisher, UserServiceImpl userService){
         this.eventPublisher = eventPublisher;
         this.userService = userService;
     }
