@@ -14,8 +14,9 @@ import lombok.Setter;
 public class TripRequestResDTO {
 
     private LocationResDTO pickUpLocation;
-
     private LocationResDTO destination;
-
+    private long tripRequestId;
+    private long passengerId;
+    private String passengerName;
     private int status;
 }

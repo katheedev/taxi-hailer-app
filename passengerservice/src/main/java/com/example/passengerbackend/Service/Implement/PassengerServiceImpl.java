@@ -95,7 +95,7 @@ public class PassengerServiceImpl implements com.example.passengerbackend.Servic
     }
 
     @Override
-    public Passenger getLoggedInUser() {
+    public Passenger getLoggedInPassenger() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
         return passengerRepo.findByEmail(email);

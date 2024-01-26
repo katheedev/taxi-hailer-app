@@ -10,7 +10,6 @@ import javax.persistence.Column;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class LocationResDTO {
 

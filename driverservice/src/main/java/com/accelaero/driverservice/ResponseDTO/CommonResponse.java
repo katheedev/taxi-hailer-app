@@ -1,9 +1,12 @@
 package com.accelaero.driverservice.ResponseDTO;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
-public class TripResponseDto {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CommonResponse {
     private String message;
     private int status;
 }

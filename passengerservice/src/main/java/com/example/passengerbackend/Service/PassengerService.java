@@ -17,5 +17,5 @@ public interface PassengerService {
 
     PassengerEditResDTO editPassenger(PassengerEditReqDTO passengerEditReqDTO);
 
-    Passenger getLoggedInUser();
+    Passenger getLoggedInPassenger();
 }

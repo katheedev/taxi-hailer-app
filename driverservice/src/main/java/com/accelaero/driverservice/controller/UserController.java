@@ -1,5 +1,6 @@
 package com.accelaero.driverservice.controller;
 
+import com.accelaero.driverservice.ResponseDTO.CommonResponse;
 import com.accelaero.driverservice.entity.VerificationToken;
 import com.accelaero.driverservice.requestdto.UserUpdateRequest;
 import com.accelaero.driverservice.requestdto.UserRegisterRequest;
@@ -75,4 +76,19 @@ public class UserController {
         return new ResponseEntity<>(userResponse,HttpStatus.OK);
     }
 
+    @PostMapping("/status")
+    public ResponseEntity<CommonResponse> handleStatusChange(@RequestParam String availability) {
+
+        CommonResponse response = userService.availabilityChange(availability);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
+    @PostMapping("/location")
+    public ResponseEntity<CommonResponse> handleLocationChange(@RequestParam String id) {
+        CommonResponse response = userService.locationChange(Long.parseLong(id));
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+
+
+
+}

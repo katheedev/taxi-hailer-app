@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +42,11 @@ public class GlobalExceptionHandler {
         List<String> errors = Collections.singletonList(ex.getMessage());
         return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.UNAUTHORIZED);
     }
-
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Map<String, List<String>>> handleEntityNotFound(EntityNotFoundException ex) {
+        List<String> errors = Collections.singletonList(ex.getMessage());
+        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.CONFLICT);
+    }
 //    @ExceptionHandler(Exception.class)
 //    public final ResponseEntity<Map<String, List<String>>> handleGeneralExceptions(Exception ex) {
 //        List<String> errors = Collections.singletonList(ex.getMessage());

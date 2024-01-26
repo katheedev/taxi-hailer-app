@@ -9,7 +9,6 @@ import com.example.passengerbackend.Repository.PassengerRepo;
 import com.example.passengerbackend.Repository.TripRequestRepo;
 import com.example.passengerbackend.RequestDTO.TripRequestReqDTO;
 import com.example.passengerbackend.ResponseDTO.LocationResDTO;
-import com.example.passengerbackend.ResponseDTO.LoginResDTO;
 import com.example.passengerbackend.ResponseDTO.TripRequestResDTO;
 import com.example.passengerbackend.Service.PassengerService;
 import com.example.passengerbackend.Service.TripService;
@@ -18,10 +17,8 @@ import com.example.passengerbackend.status.TripRequestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.naming.directory.InvalidAttributesException;
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TripServiceImpl implements TripService {
@@ -42,7 +39,7 @@ public class TripServiceImpl implements TripService {
     @Override
     @Transactional
     public TripRequestResDTO createTripRequest(TripRequestReqDTO tripRequestDto) {
-        Passenger passenger = passengerService.getLoggedInUser();
+        Passenger passenger = passengerService.getLoggedInPassenger();
         Location  destination = locationRepo.findById(tripRequestDto.getDestinationId()).orElseThrow(() -> new PassengerAlreadyExist("Invalid Location"));
         Location pickUpLocation = locationRepo.findById(tripRequestDto.getPickUpLocationId()).orElseThrow(() -> new PassengerAlreadyExist("Invalid Location"));
         TripRequest tripRequest = new TripRequest();
@@ -51,7 +48,7 @@ public class TripServiceImpl implements TripService {
             tripRequest.setDestination_id(destination.getId());
 
         tripRequest.setPassenger(passenger);
-        tripRequest.setStatus(TripRequestStatus.DEFAULT.getValue());
+        tripRequest.setStatus(TripRequestStatus.REQUESTED.getValue());
 
         passenger.getTripRequests().add(tripRequest);
         passenger.setStatus(PassengerStatus.REQUEST.getValue());
@@ -67,6 +64,9 @@ public class TripServiceImpl implements TripService {
 
             tripResponse.setPickUpLocation(convertToLocationDTO(locationRepo.getById(tripRequest.getPickUpLocation_id())));
             tripResponse.setDestination(convertToLocationDTO(locationRepo.getById(tripRequest.getDestination_id())));
+            tripResponse.setPassengerId(passenger.getId());
+            tripResponse.setTripRequestId(tripRequest.getId());
+            tripResponse.setPassengerName(passenger.getFirstName());
             tripResponse.setStatus(tripResponse.getStatus());
             return tripResponse;
         }

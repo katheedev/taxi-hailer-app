@@ -1,13 +1,21 @@
 package com.accelaero.driverservice.service.serviceimpl;
 
+import com.accelaero.driverservice.ResponseDTO.CommonResponse;
+import com.accelaero.driverservice.entity.Car;
+import com.accelaero.driverservice.entity.Location;
 import com.accelaero.driverservice.entity.User;
 import com.accelaero.driverservice.entity.VerificationToken;
+import com.accelaero.driverservice.exception.InvalidInputException;
+import com.accelaero.driverservice.exception.LocationNotFound;
 import com.accelaero.driverservice.exception.UserAlreadyExistException;
+import com.accelaero.driverservice.repository.LocationRepository;
 import com.accelaero.driverservice.repository.UserRepository;
 import com.accelaero.driverservice.repository.VerficationTokenRegistry;
 import com.accelaero.driverservice.requestdto.UserUpdateRequest;
 import com.accelaero.driverservice.requestdto.UserRegisterRequest;
 import com.accelaero.driverservice.responsedto.UserResponse;
+import com.accelaero.driverservice.status.DriverStatus;
+import com.accelaero.driverservice.util.CarType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +34,10 @@ import javax.transaction.Transactional;
     private VerficationTokenRegistry tokenRepository;
 
     @Autowired
+    private LocationRepository locationRepository;
+
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
@@ -40,6 +52,16 @@ import javax.transaction.Transactional;
         user.setLastName(userDto.getLastName());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setEmail(userDto.getEmail());
+        Location currentLocation = this.locationRepository.findById(userDto.getCurrentLocationId()).orElseThrow(()->new LocationNotFound("Location Not Found"));
+
+        user.setCurrentLocationName(currentLocation.getName());
+        Car car = new Car();
+        car.setCarType(CarType.fromCode(userDto.getCarType()));
+        car.setDescription(userDto.getCarDescription());
+        car.setLicPlateNo(userDto.getLicPlateNo());
+        user.setCar(car);
+
+
      //   user.setRoles(Arrays.asList("ROLE_USER"));
 
         return userRepository.save(user);
@@ -62,10 +84,7 @@ import javax.transaction.Transactional;
 
     @Override
     public UserResponse editUser(UserUpdateRequest updateRequest) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = (String) authentication.getPrincipal();
-        User user = userRepository.findByEmailIgnoreCase(email);
-
+        User user = getLoggedInDriver();
         user.setFirstName(updateRequest.getFirstName());
         user.setLastName(updateRequest.getLastName());
         user.setPhone(updateRequest.getPhone());
@@ -73,6 +92,45 @@ import javax.transaction.Transactional;
         user = userRepository.save(user);
         return userResponseConverer(user);
     }
+
+    @Override
+    public User getLoggedInDriver() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (String) authentication.getPrincipal();
+        return userRepository.findByEmailIgnoreCase(email);
+    }
+
+    @Override
+    public CommonResponse availabilityChange(String availability) {
+        User user = getLoggedInDriver();
+        if(availability.equalsIgnoreCase("online")) {
+            user.setStatus(DriverStatus.IDLE.getValue());
+
+        }
+        else if(availability.equalsIgnoreCase("offline")){
+            user.setStatus(DriverStatus.OFFLINE.getValue());
+        }
+        else {
+          throw new InvalidInputException("Invalid Availability Status");
+        }
+
+        userRepository.save(user);
+        return new CommonResponse("Status Successfully Changed",0);
+
+    }
+
+    @Override
+    public CommonResponse locationChange(long id) {
+        User user  = getLoggedInDriver();
+        Location currentLocation = this.locationRepository.findById(id).orElseThrow(()->new LocationNotFound("Location Not Found"));
+
+        user.setCurrentLocationName(currentLocation.getName());
+        this.userRepository.save(user);
+        return  new CommonResponse("Current Location Changed to "+currentLocation.getName(),200);
+    }
+
+
+
 
     @Override
     public void saveRegisteredUser(User user) {

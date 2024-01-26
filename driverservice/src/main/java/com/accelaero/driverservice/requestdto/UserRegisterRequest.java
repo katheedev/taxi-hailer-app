@@ -1,11 +1,15 @@
 package com.accelaero.driverservice.requestdto;
 
+import com.accelaero.driverservice.util.CarType;
 import com.accelaero.driverservice.validator.PasswordMatches;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -14,27 +18,43 @@ import javax.validation.constraints.NotNull;
 @PasswordMatches
 public class UserRegisterRequest {
 
-    @NotNull
-    @NotEmpty
+    @NotNull(message = "First name cannot be null")
+    @NotEmpty(message = "First name cannot be empty")
     private String firstName;
 
-    @NotNull
-    @NotEmpty
+    @NotNull(message = "Last name cannot be null")
+    @NotEmpty(message = "Last name cannot be empty")
     private String lastName;
 
-    @NotNull
-    @NotEmpty
+    @NotNull(message = "Password cannot be null")
+    @NotEmpty(message = "Password cannot be empty")
     private String password;
+
     private String matchingPassword;
 
-    @NotNull
-    @NotEmpty
-    @Email
+    @NotNull(message = "Email cannot be null")
+    @NotEmpty(message = "Email cannot be empty")
+    @Email(message = "Invalid email format")
     private String email;
 
-    @NotEmpty
-    @NotNull
+    @NotNull(message = "Phone number cannot be null")
+    @NotEmpty(message = "Phone number cannot be empty")
     private String phone;
 
+    @Min(value = 1, message = "Invalid current location ID")
+    private long currentLocationId;
+
+    @NotNull(message = "License plate number cannot be null")
+    @NotEmpty(message = "License plate number cannot be empty")
+    private String licPlateNo;
+
+    @Min(value = 1, message = "Invalid car type.")
+    private int carType;
+
+
+
+    private String carDescription;
+    private double longitude;
+    private double latitude;
 
 }

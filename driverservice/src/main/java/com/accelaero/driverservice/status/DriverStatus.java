@@ -1,14 +1,13 @@
 package com.accelaero.driverservice.status;
 
-public enum PassengerStatus {
+public enum DriverStatus {
     IDLE(0),
-    REQUESTED(1),
-    WAITING(2),
-    MOVE(3);
+    ON_TRIP(1),
+    OFFLINE(2);
 
     private final int value;
 
-    PassengerStatus(int value) {
+    DriverStatus(int value) {
         this.value = value;
     }
 
