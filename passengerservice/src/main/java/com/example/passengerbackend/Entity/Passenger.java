@@ -1,5 +1,6 @@
 package com.example.passengerbackend.Entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "passenger")
 public class Passenger {
 
@@ -41,22 +43,5 @@ public class Passenger {
     @Column(name = "status")
     private int status;
 
-    public Passenger(Long id, String firstName, String lastName, String email, String password) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-    }
 
-    @Override
-    public String toString() {
-        return "Passenger{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
 }

@@ -1,6 +1,6 @@
 package com.example.passengerbackend.RequestDTO;
 
-import com.example.passengerbackend.Validator.ValidEmail;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,10 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class RegisterReqDTO {
-
-
-    private Long id;
+public class PassengerEditReqDTO {
 
     @NotNull
     @NotEmpty
@@ -22,13 +19,4 @@ public class RegisterReqDTO {
     @NotEmpty
     private  String last_name;
 
-    @NotNull
-    @NotEmpty
-    @ValidEmail
-    private String email;
-
-    @NotNull
-    @NotEmpty
-    private String password;
-    
 }

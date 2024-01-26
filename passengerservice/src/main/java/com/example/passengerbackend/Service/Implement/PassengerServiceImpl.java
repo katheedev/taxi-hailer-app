@@ -1,11 +1,13 @@
 package com.example.passengerbackend.Service.Implement;
 
+import com.example.passengerbackend.RequestDTO.PassengerEditReqDTO;
 import com.example.passengerbackend.RequestDTO.RegisterReqDTO;
 import com.example.passengerbackend.Entity.Passenger;
 import com.example.passengerbackend.Entity.VerificationToken;
 import com.example.passengerbackend.Exception.PassengerAlreadyExist;
 import com.example.passengerbackend.Repository.PassengerRepo;
 import com.example.passengerbackend.Repository.VerificationTokenRepo;
+import com.example.passengerbackend.ResponseDTO.PassengerEditResDTO;
 import com.example.passengerbackend.status.PassengerStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -41,9 +43,9 @@ public class PassengerServiceImpl implements com.example.passengerbackend.Servic
         passenger.setEmail(registerReqDTO.getEmail());
         passenger.setFirstName(registerReqDTO.getFirst_name());
         passenger.setLastName(registerReqDTO.getLast_name());
+        passenger.setPassword(this.passwordEncoder.encode(registerReqDTO.getPassword()));
         passenger.setTripRequests(new ArrayList<>());
         passenger.setStatus(PassengerStatus.IDLE.getValue());
-        passenger.setPassword(  this.passwordEncoder.encode(registerReqDTO.getPassword()));
 
         //save new Passenger entity to the DB
         return passengerRepo.save(passenger);
@@ -70,11 +72,33 @@ public class PassengerServiceImpl implements com.example.passengerbackend.Servic
     }
 
     @Override
+    public PassengerEditResDTO editPassenger(PassengerEditReqDTO passengerEditReqDTO){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = (String) authentication.getPrincipal();
+        Passenger passenger = passengerRepo.findByEmail(email);
+
+        passenger.setFirstName(passengerEditReqDTO.getFirst_name());
+        passenger.setLastName(passengerEditReqDTO.getLast_name());
+
+        passenger = passengerRepo.save(passenger);
+        return passengerResponseConvert(passenger);
+
+    }
+
+    private PassengerEditResDTO passengerResponseConvert(Passenger passenger){
+        PassengerEditResDTO passengerEditResDTO = new PassengerEditResDTO();
+        passengerEditResDTO.setEmail(passenger.getEmail());
+        passengerEditResDTO.setFirst_name(passenger.getFirstName());
+        passengerEditResDTO.setLast_name(passenger.getLastName());
+
+        return passengerEditResDTO;
+    }
+
+    @Override
     public Passenger getLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = (String) authentication.getPrincipal();
         return passengerRepo.findByEmail(email);
+
     }
-
-
 }

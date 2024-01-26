@@ -14,7 +14,6 @@ public enum TripRequestStatus {
     TripRequestStatus(int value) {
         this.value = value;
     }
-
     public static TripRequestStatus fromValue(int value) {
         for (TripRequestStatus status : TripRequestStatus.values()) {
             if (status.getValue() == value) {
