@@ -1,6 +1,6 @@
 package com.accelaero.driverservice.service.serviceimpl;
 
-import com.accelaero.driverservice.ResponseDTO.CommonResponse;
+import com.accelaero.driverservice.responsedto.CommonResponse;
 import com.accelaero.driverservice.entity.Car;
 import com.accelaero.driverservice.entity.Location;
 import com.accelaero.driverservice.entity.User;
@@ -14,6 +14,7 @@ import com.accelaero.driverservice.repository.VerficationTokenRegistry;
 import com.accelaero.driverservice.requestdto.UserUpdateRequest;
 import com.accelaero.driverservice.requestdto.UserRegisterRequest;
 import com.accelaero.driverservice.responsedto.UserResponse;
+import com.accelaero.driverservice.service.TripService;
 import com.accelaero.driverservice.status.DriverStatus;
 import com.accelaero.driverservice.util.CarType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +28,24 @@ import javax.transaction.Transactional;
 @Service
 @Transactional
  public class UserServiceImpl implements com.accelaero.driverservice.service.UserService {
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private VerficationTokenRegistry tokenRepository;
+    private final UserRepository userRepository;
+    private final VerficationTokenRegistry tokenRepository;
 
-    @Autowired
-    private LocationRepository locationRepository;
+    private final LocationRepository locationRepository;
 
 
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserServiceImpl(UserRepository userRepository, VerficationTokenRegistry tokenRepository, LocationRepository locationRepository,
+                           PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.tokenRepository = tokenRepository;
+        this.locationRepository = locationRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
 
     @Override
     public User registerNewUserAccount(UserRegisterRequest userDto) throws UserAlreadyExistException {
@@ -52,6 +59,7 @@ import javax.transaction.Transactional;
         user.setLastName(userDto.getLastName());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setEmail(userDto.getEmail());
+        user.setPhone(userDto.getPhone());
         Location currentLocation = this.locationRepository.findById(userDto.getCurrentLocationId()).orElseThrow(()->new LocationNotFound("Location Not Found"));
 
         user.setCurrentLocationName(currentLocation.getName());
@@ -83,14 +91,15 @@ import javax.transaction.Transactional;
     }
 
     @Override
-    public UserResponse editUser(UserUpdateRequest updateRequest) {
+    public User editUser(UserUpdateRequest updateRequest) {
         User user = getLoggedInDriver();
         user.setFirstName(updateRequest.getFirstName());
         user.setLastName(updateRequest.getLastName());
         user.setPhone(updateRequest.getPhone());
+        user.setCurrentLocationName(updateRequest.getCurrentLocationName());
 
         user = userRepository.save(user);
-        return userResponseConverer(user);
+        return user;
     }
 
     @Override
@@ -100,36 +109,22 @@ import javax.transaction.Transactional;
         return userRepository.findByEmailIgnoreCase(email);
     }
 
-    @Override
-    public CommonResponse availabilityChange(String availability) {
-        User user = getLoggedInDriver();
-        if(availability.equalsIgnoreCase("online")) {
-            user.setStatus(DriverStatus.IDLE.getValue());
 
-        }
-        else if(availability.equalsIgnoreCase("offline")){
-            user.setStatus(DriverStatus.OFFLINE.getValue());
-        }
-        else {
-          throw new InvalidInputException("Invalid Availability Status");
-        }
-
-        userRepository.save(user);
-        return new CommonResponse("Status Successfully Changed",0);
-
-    }
 
     @Override
-    public CommonResponse locationChange(long id) {
+    public CommonResponse locationChange(String name) {
         User user  = getLoggedInDriver();
-        Location currentLocation = this.locationRepository.findById(id).orElseThrow(()->new LocationNotFound("Location Not Found"));
+        Location currentLocation = this.locationRepository.findByName(name).orElseThrow(()->new LocationNotFound("Location Not Found"));
 
         user.setCurrentLocationName(currentLocation.getName());
         this.userRepository.save(user);
         return  new CommonResponse("Current Location Changed to "+currentLocation.getName(),200);
     }
 
-
+    @Override
+    public User getUserByEmail(String email) {
+        return this.userRepository.findByEmailIgnoreCase(email);
+    }
 
 
     @Override

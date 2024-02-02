@@ -27,6 +27,12 @@ public class Trip {
     @Column(name="passenger_id")
     private Long passengerId;
 
+    @Column(name="driver_id")
+    private Long driverId;
+
+    @Column(name = "trip_request_id")
+    private Long tripRequestId;
+
     @Column(name="pickup_location_name")
     private String pickupLocationName;
 
@@ -51,4 +57,6 @@ public class Trip {
 
     @Column(name = "total_fare")
     private double totalFare;
+
+
 }

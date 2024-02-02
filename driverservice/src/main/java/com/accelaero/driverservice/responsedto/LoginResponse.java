@@ -1,5 +1,6 @@
 package com.accelaero.driverservice.responsedto;
 
+import com.accelaero.driverservice.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class LoginResponse {
-    private String email;
     private String token;
+    private User user;
 }

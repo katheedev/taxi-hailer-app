@@ -25,7 +25,7 @@ public class Payment {
     @Column(name = "trip_id")
     private Long tripId;
 
-    @Column(name = "paid_time")
+    @Column(name = "paid_time",updatable = false)
     @CreatedDate
     private Date paidTime;
 

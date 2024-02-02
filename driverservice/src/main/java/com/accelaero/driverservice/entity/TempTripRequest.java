@@ -24,6 +24,9 @@ public class TempTripRequest {
     @Column(name="passenger_id")
     private Long passengerId;
 
+    @Column(name="passenger_name")
+    private String passengerName;
+
     @Column(name="driver_id")
     private Long driverId;
 
@@ -32,6 +35,10 @@ public class TempTripRequest {
 
     @Column(name="destination_name")
     private String destinationName;
+
+
+    @Column(name="total_fare")
+    private Double totalFare;
 
     @Column(name = "status")
     private int status;

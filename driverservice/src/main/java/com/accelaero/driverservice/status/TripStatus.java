@@ -1,9 +1,14 @@
 package com.accelaero.driverservice.status;
 
 public enum TripStatus {
-    STARTED(0),
-    ENDED(1),
-    COMPLETED(2);
+    ACCEPTED(0),
+    STARTED(1),
+    ENDED(2),
+    COMPLETED(3),
+
+    // Not persisted in DB
+    ALL_DRIVERS_BUSY(500),
+    NO_DRIVERS_FOUND(501);
 
     private final int value;
 

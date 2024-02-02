@@ -1,10 +1,11 @@
 package com.accelaero.driverservice.controller;
 
-import com.accelaero.driverservice.ResponseDTO.CommonResponse;
+import com.accelaero.driverservice.responsedto.CommonResponse;
 import com.accelaero.driverservice.entity.VerificationToken;
 import com.accelaero.driverservice.requestdto.UserUpdateRequest;
 import com.accelaero.driverservice.requestdto.UserRegisterRequest;
 import com.accelaero.driverservice.responsedto.UserResponse;
+import com.accelaero.driverservice.service.TripService;
 import com.accelaero.driverservice.service.UserService;
 import com.accelaero.driverservice.service.event.OnRegistrationCompleteEvent;
 import com.accelaero.driverservice.service.serviceimpl.UserServiceImpl;
@@ -27,12 +28,14 @@ import javax.validation.Valid;
 public class UserController {
 
     public final UserService userService;
+    public final TripService tripService;
     public final ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public UserController(ApplicationEventPublisher eventPublisher, UserServiceImpl userService){
+    public UserController(ApplicationEventPublisher eventPublisher, UserServiceImpl userService, TripService tripService){
         this.eventPublisher = eventPublisher;
         this.userService = userService;
+        this.tripService = tripService;
     }
 
 
@@ -69,24 +72,31 @@ public class UserController {
     }
 
     @PostMapping("/edit")
-    public ResponseEntity<UserResponse> editUserAccount(
+    public ResponseEntity<User> editUserAccount(
             @RequestBody @Valid UserUpdateRequest userDto, HttpServletRequest request, Errors errors) {
 
-       UserResponse userResponse = userService.editUser(userDto);
+       User userResponse = userService.editUser(userDto);
         return new ResponseEntity<>(userResponse,HttpStatus.OK);
+    }
+    @GetMapping("/getUserDetails")
+    public ResponseEntity<User> getUserDetails() {
+        User user = userService.getLoggedInDriver();
+        return new ResponseEntity<>(user,HttpStatus.OK);
     }
 
     @PostMapping("/status")
     public ResponseEntity<CommonResponse> handleStatusChange(@RequestParam String availability) {
 
-        CommonResponse response = userService.availabilityChange(availability);
+        CommonResponse response = tripService.availabilityChange(availability);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
     @PostMapping("/location")
-    public ResponseEntity<CommonResponse> handleLocationChange(@RequestParam String id) {
-        CommonResponse response = userService.locationChange(Long.parseLong(id));
+    public ResponseEntity<CommonResponse> handleLocationChange(@RequestParam String name) {
+        CommonResponse response = userService.locationChange(name);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
+
 
 
 

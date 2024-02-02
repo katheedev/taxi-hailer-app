@@ -1,5 +1,6 @@
 package com.accelaero.driverservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,6 +32,7 @@ public class User {
     private String lastName;
 
     @Column(name = "password",nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Column(name = "email", unique = true,nullable = false)
@@ -58,7 +60,7 @@ public class User {
     @Column(name= "status",nullable = false)
     private int status;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "car_id", referencedColumnName = "id",nullable = false)
     private Car car;
 }

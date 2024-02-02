@@ -1,6 +1,6 @@
 package com.accelaero.driverservice.consumer;
 
-import com.accelaero.driverservice.responsedto.TripRequestResDTO;
+import com.accelaero.driverservice.requestdto.TripRequestResDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;

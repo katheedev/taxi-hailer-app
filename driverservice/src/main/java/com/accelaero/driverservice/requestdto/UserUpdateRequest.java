@@ -23,6 +23,10 @@ public class UserUpdateRequest {
     @NotNull
     private String phone;
 
+    @NotEmpty
+    @NotNull
+    private String currentLocationName;
+
 
 
 }

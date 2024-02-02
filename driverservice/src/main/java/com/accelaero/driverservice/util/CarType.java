@@ -1,7 +1,7 @@
 package com.accelaero.driverservice.util;
 
 public enum CarType {
-    SEDAN(0), SUV(1), VAN(2),OTHER(3);
+    SEDAN(1), SUV(2), VAN(3),OTHER(4);
 
     private int code;
 
