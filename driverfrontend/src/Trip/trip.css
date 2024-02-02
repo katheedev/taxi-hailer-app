@@ -1,0 +1,22 @@
+/* trip.css */
+
+.home .container {
+    margin-left: 10px; /* Adjust as needed */
+}
+
+.home input,
+.home button,
+.home select,
+.home optgroup,
+.home textarea {
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    position: relative !important;
+    padding: 8px !important;
+}
+
+.lottie{
+    width: 100px;
+}

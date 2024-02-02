@@ -1,0 +1,50 @@
+/* trip.css */
+
+.home .container {
+    margin-left: 10px; /* Adjust as needed */
+}
+
+.home input,
+.home button,
+.home select,
+.home optgroup,
+.home textarea {
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    position: relative !important;
+    padding: 8px !important;
+}
+
+
+.availability {
+    display: inline-flex;
+    justify-content: center;
+    margin-top: 16px; /* Adjust the value as needed */
+}
+
+
+/* Add margin between the radio buttons */
+.availability>*,.currentLocation>* {
+    margin-left: 12px; /* Adjust the value as needed */
+}
+
+
+.currentLocation{
+    margin:16px 0px 0px 20px; /* Adjust the value as needed */
+    display: inline-flex;
+}
+
+.currentLocation>*{
+    margin-left: 12px; /* Adjust the value as needed */
+}
+
+.tripRequests{
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+
