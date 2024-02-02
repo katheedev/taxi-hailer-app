@@ -18,4 +18,5 @@ public class TripRequestResDTO {
     private long passengerId;
     private String passengerName;
     private int status;
+    private double totalFare;
 }

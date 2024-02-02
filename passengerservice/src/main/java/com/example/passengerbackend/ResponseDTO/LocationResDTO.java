@@ -11,6 +11,7 @@ import javax.persistence.Column;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class LocationResDTO {
 
     private Long id;
@@ -22,4 +23,5 @@ public class LocationResDTO {
     private String name;
 
     private String description;
+
 }

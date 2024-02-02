@@ -48,6 +48,12 @@ public class GlobalExceptionHandler {
         List<String> errors = Collections.singletonList(ex.getMessage());
         return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(InvalidTripRequest.class)
+    public ResponseEntity<Map<String, List<String>>> handleInvalidTripRequest(InvalidTripRequest ex) {
+        List<String> errors = Collections.singletonList(ex.getMessage());
+        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.CONFLICT);
+    }
 //    @ExceptionHandler(Exception.class)
 //    public final ResponseEntity<Map<String, List<String>>> handleGeneralExceptions(Exception ex) {
 //        List<String> errors = Collections.singletonList(ex.getMessage());

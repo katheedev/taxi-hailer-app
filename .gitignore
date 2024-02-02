@@ -39,3 +39,11 @@ out/
 
 ### VS Code ###
 .vscode/
+/passengerfrontend/public/favicon.ico
+/passengerfrontend/public/index.html
+/passengerfrontend/public/logo192.png
+/passengerfrontend/public/logo512.png
+/passengerfrontend/public/manifest.json
+/passengerfrontend/package-lock.json
+/passengerfrontend/README.md
+/passengerfrontend/public/robots.txt

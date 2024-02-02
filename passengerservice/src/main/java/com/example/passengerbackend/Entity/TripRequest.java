@@ -1,5 +1,6 @@
 package com.example.passengerbackend.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ public class TripRequest {
 
     @ManyToOne
     @JoinColumn(name="passenger_id", referencedColumnName = "id", updatable = false)
+    @JsonIgnore
     private Passenger passenger;
 
     @Column(name="pick_location_id")

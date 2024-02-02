@@ -18,4 +18,5 @@ public interface PassengerService {
     PassengerEditResDTO editPassenger(PassengerEditReqDTO passengerEditReqDTO);
 
     Passenger getLoggedInPassenger();
+    Passenger getPassengerByEmail(String email);
 }
