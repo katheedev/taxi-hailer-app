@@ -17,23 +17,23 @@ const optionsWithDisabled = [
    // { label: 'Orange', value: 'Orange', disabled: true },
 ];
 
+
 const Home = () => {
     const dispatch = useDispatch();
     const history = useHistory();
 
     const { user, token } = useSelector((state) => state.userReducer.getUser);
+
+
+
+
     const { tripRequests } = useSelector((state) => state.tripReducer);
     const {loading,trip,error,success } = useSelector((state) => state.tripReducer.acceptedTrip);
 
     const [availability, setAvailability] = useState("online");
-    const [selectedLocation, setSelectedLocation] = useState(user.currentLocationName);
+    const [selectedLocation, setSelectedLocation] = useState(user!=null ? user.currentLocationName:"");
 
-    useEffect(() => {
-        if (!user || !token) {
-            // Redirect to login page if user is not authenticated
-            history.push("/log_in");
-        }
-    }, [user, token, history]);
+
 
     useEffect(() => {
         console.log("Dispatch Fetch locations");
@@ -117,6 +117,10 @@ const Home = () => {
     const handleRejectTrip = (trip) => {
         dispatch(rejectTrip({ id: trip.id }));
     };
+    if(user==null){
+        history.push("/log_in");
+        return null;
+    }
 
     return (
         <section className="home">
@@ -144,7 +148,7 @@ const Home = () => {
                                     placeholder="Select current location"
                                     onChange={handleLocationChange}
                                     value={selectedLocation}
-                                    defaultValue={user.currentLocationName}
+                                    defaultValue={selectedLocation}
                                 >
                                     {locations.map((location) => (
                                         <Option key={location.name} value={location.name}>
