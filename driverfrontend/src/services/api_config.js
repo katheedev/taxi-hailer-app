@@ -19,20 +19,22 @@ const axiosConfig = {
 // Check if the token exists in localStorage
 const token = localStorage.getItem(LOCAL_STORAGE_KEY_TOKEN);
 
-// Set the Authorization header if the token exists
-if (token) {
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-} else {
-  // Clear the Authorization header if there is no token
-  delete axios.defaults.headers.common['Authorization'];
-  // You can also set it to an empty string if needed
-  // axios.defaults.headers.common['Authorization'] = '';
+const getInstance =()=>{
+  const token = localStorage.getItem(LOCAL_STORAGE_KEY_TOKEN);
+  const instance = axios.create(axiosConfig);
+  if (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  }
+  else {
+    delete axios.defaults.headers.common['Authorization'];
+  }
+  return instance;
 }
 
-const instance = axios.create(axiosConfig);
+
 
 // Add a response interceptor
-instance.interceptors.response.use(
+getInstance().interceptors.response.use(
   function (response) {
     return response;
   },
@@ -52,19 +54,19 @@ instance.interceptors.response.use(
 const responseBody = (response) => response.data;
 
 export async function get(url,) {
-  return await instance.get(url).then(responseBody);
+  return await getInstance().get(url).then(responseBody);
 }
 
 async function post(url, data) {
-  return instance.post(url, { ...data }).then(responseBody);
+  return getInstance().post(url, { ...data }).then(responseBody);
 }
 
 async function put(url, data) {
-  return instance.put(url, { ...data }).then(responseBody);
+  return getInstance().put(url, { ...data }).then(responseBody);
 }
 
 async function del(url) {
-  return await instance.delete(url).then(responseBody);
+  return await getInstance().delete(url).then(responseBody);
 }
 
 const api_request = { get, post, put, del };
