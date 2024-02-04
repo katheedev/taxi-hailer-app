@@ -17,6 +17,18 @@
     padding: 8px !important;
 }
 
-.lottie{
-    width: 100px;
+#lottie{
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+}
+#lottie >.ant-space-item{
+    width: 50%;
+    margin: 10px 10px;
+    min-height: 50%;
+
+}
+#lottie::before{
+    opacity: 1;
 }

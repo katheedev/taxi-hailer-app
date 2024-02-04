@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { fetchLocations, locationChange } from "../redux/reducers/locationSlice";
@@ -32,7 +32,7 @@ const Home = () => {
 
     const [availability, setAvailability] = useState("online");
     const [selectedLocation, setSelectedLocation] = useState(user!=null ? user.currentLocationName:"");
-
+    const isInitialRender = useRef(true);
 
 
     useEffect(() => {
@@ -62,13 +62,17 @@ const Home = () => {
     }, [success,trip]);
 
     useEffect(()=>{
+        if (isInitialRender.current) {
+            isInitialRender.current = false;
+            return;
+        }
+
         console.log("AVAILABILITY IN USE EFFECT " + availability)
         dispatch( statusChange(availability));
-    },[availability])
+    },[availability,dispatch])
 
     const handleAvailabilityChange = (e) => {
         setAvailability(e.target.value);
-
     };
 
     const handleLocationChange = (value) => {
