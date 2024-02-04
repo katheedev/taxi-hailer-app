@@ -30,13 +30,23 @@ const TripDetail = () => {
 
 
     useEffect(() => {
+        const fetchTripDetailsData = async () => {
+            try {
+                await dispatch(fetchTripDetails());
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching trip details:", error);
+            }
+        };
 
         const fetchTripDetailInterval = setInterval(() => {
-            dispatch(fetchTripDetails());        }, 5000);
+            fetchTripDetailsData();
+        }, 5000);
+
+        //fetchTripDetailsData(); // Fetch data immediately when the component mounts
 
         return () => clearInterval(fetchTripDetailInterval);
     }, [dispatch, history]);
-
 
 
     const columns = [
