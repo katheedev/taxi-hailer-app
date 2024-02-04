@@ -285,12 +285,12 @@ import java.util.stream.Collectors;
     @Override
     public CommonResponse availabilityChange(String availability) {
         User user = userService.getLoggedInDriver();
-        if(availability.equalsIgnoreCase("online")) {
+        if(availability.equalsIgnoreCase("online") && user.getStatus()==DriverStatus.OFFLINE.getValue()) {
             user.setStatus(DriverStatus.IDLE.getValue());
             handleOnlineStatusChange(user);
 
         }
-        else if(availability.equalsIgnoreCase("offline")){
+        else if(availability.equalsIgnoreCase("offline")  && user.getStatus()==DriverStatus.IDLE.getValue()){
             user.setStatus(DriverStatus.OFFLINE.getValue());
             handleOfflineStatusChange(user);
         }
