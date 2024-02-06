@@ -46,4 +46,7 @@ out/
 /passengerfrontend/public/manifest.json
 /passengerfrontend/package-lock.json
 /passengerfrontend/README.md
-/passengerfrontend/public/robots.txt
+/passengerfrontend/public
+
+/driverfrontend/node_modules
+/driverfrontend/package-lock.json
