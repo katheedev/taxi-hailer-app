@@ -34,14 +34,13 @@ import java.util.Optional;
 public class TripServiceImpl implements TripService {
 
     private static final Logger log = LoggerFactory.getLogger(TripServiceImpl.class);
-//    private static final double EARTH_RADIUS = 6371; // Earth's radius in kilometers
-//    private static final DecimalFormat df = new DecimalFormat("0.00");
+
     private final TripRequestRepo tripRequestRepo;
     private final PassengerRepo passengerRepo;
     private final PassengerService passengerService;
     private final LocationRepo locationRepo;
     private final TripResponseRepo tripResponseRepo;
-
+    private static final double EARTH_RADIUS = 6371; // Earth's radius in kilometers
     @Autowired
     public TripServiceImpl(TripRequestRepo tripRequestRepo, PassengerRepo passengerRepo, PassengerService passengerService, LocationRepo locationRepo, TripResponseRepo tripRespo) {
         this.tripRequestRepo = tripRequestRepo;
@@ -76,24 +75,7 @@ public class TripServiceImpl implements TripService {
         return getlatestTrip(passenger);
     }
 
-//    private double calculateDistance(LocationResDTO A, LocationResDTO B) {
-//
-//        double lat1 = Math.toRadians(A.getLatitude());
-//        double lon1 = Math.toRadians(A.getLongitude());
-//        double lat2 = Math.toRadians(B.getLatitude());
-//        double lon2 = Math.toRadians(B.getLongitude());
-//
-//        double dLat = lat2 - lat1;
-//        double dLon = lon2 - lon1;
-//
-//        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-//                Math.cos(lat1) * Math.cos(lat2) *
-//                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-//
-//        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-//
-//        return (double) Math.round(EARTH_RADIUS * c * 30 * 100) / 100; // Distance times per km travel cost
-//    }
+
 
     private TripRequestResDTO getlatestTrip(Passenger passenger) {
 
@@ -107,13 +89,30 @@ public class TripServiceImpl implements TripService {
             tripResponse.setPassengerId(passenger.getId());
             tripResponse.setTripRequestId(tripRequest.getId());
             tripResponse.setPassengerName(passenger.getFirstName());
-            tripResponse.setStatus(tripResponse.getStatus());
-            tripResponse.setTotalFare(tripResponse.getTotalFare());
+           // tripResponse.setStatus(tripResponse.getStatus());
+            tripResponse.setTotalFare(calculateDistance(tripResponse.getPickUpLocation(), tripResponse.getDestination()));
             return tripResponse;
         }
         return new TripRequestResDTO();
     }
+        private double calculateDistance(LocationResDTO A, LocationResDTO B) {
 
+        double lat1 = Math.toRadians(A.getLatitude());
+        double lon1 = Math.toRadians(A.getLongitude());
+        double lat2 = Math.toRadians(B.getLatitude());
+        double lon2 = Math.toRadians(B.getLongitude());
+
+        double dLat = lat2 - lat1;
+        double dLon = lon2 - lon1;
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1) * Math.cos(lat2) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return (double) Math.round(EARTH_RADIUS * c * 30 * 100) / 100; // Distance times per km travel cost
+    }
     private LocationResDTO convertToLocationDTO(Location location) {
         LocationResDTO locationDTO = new LocationResDTO();
         // Map properties from Location to LocationDTO
