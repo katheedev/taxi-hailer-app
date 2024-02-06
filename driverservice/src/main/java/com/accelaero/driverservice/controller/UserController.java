@@ -21,6 +21,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.concurrent.ExecutionException;
 
 
 @Controller
@@ -85,14 +86,14 @@ public class UserController {
     }
 
     @PostMapping("/status")
-    public ResponseEntity<CommonResponse> handleStatusChange(@RequestParam String availability) {
+    public ResponseEntity<CommonResponse> handleStatusChange(@RequestParam String availability) throws ExecutionException, InterruptedException {
 
         CommonResponse response = tripService.availabilityChange(availability);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
     @PostMapping("/location")
-    public ResponseEntity<CommonResponse> handleLocationChange(@RequestParam String name) {
-        CommonResponse response = userService.locationChange(name);
+    public ResponseEntity<CommonResponse> handleLocationChange(@RequestParam String name) throws ExecutionException, InterruptedException {
+        CommonResponse response = tripService.locationChange(name);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 

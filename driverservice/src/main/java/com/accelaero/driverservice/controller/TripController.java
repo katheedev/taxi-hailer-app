@@ -32,13 +32,13 @@ public class TripController {
         this.tripResponseProducer = tripResponseEventProducer;
     }
 
-    // just for testing
     @GetMapping("/getTrips")
     public ResponseEntity<  List<TempTripRequest> > getTripStats() throws ExecutionException, InterruptedException {
         // handle trip response
         List<TempTripRequest> tripResponseDto=  tripService.getTripStats();
         return new ResponseEntity<>(tripResponseDto,HttpStatus.OK);
     }
+    //for testing
     @GetMapping("/getAllTrips")
     public ResponseEntity<  List<TempTripRequest> > getAllTripRequestsByDriver(@RequestParam String driverId) throws ExecutionException, InterruptedException {
         // handle trip response
@@ -60,17 +60,6 @@ public ResponseEntity<TripResponseReqDto> handleAcceptTripRequest(@RequestParam 
 public ResponseEntity< TempTripRequest > handleRejectTripRequest(@RequestParam String id) throws ExecutionException, InterruptedException {
     // handle trip response
     TempTripRequest response=  tripService.handleRejectTripRequest(Long.parseLong(id));
-    if(response.getStatus()==TripStatus.ALL_DRIVERS_BUSY.getValue()){
-        TripResponseReqDto busyResponse = new TripResponseReqDto();
-        busyResponse.setStatus(TripStatus.ALL_DRIVERS_BUSY.getValue());
-        busyResponse.setStatusMessage("ALL DRIVERS ARE BUSY");
-        busyResponse.setPassengerId(response.getPassengerId());
-        busyResponse.setTripRequestId(response.getTripRequestId());
-        busyResponse.setPassengerName(response.getPassengerName());
-        busyResponse.setDriverId(response.getDriverId());
-        tripResponseProducer.send(busyResponse,tripResponseTopic);
-    }
-
     return new ResponseEntity<>(response,HttpStatus.OK);
 }
 
