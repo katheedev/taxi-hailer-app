@@ -1,10 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { InboxOutlined, UploadOutlined } from "@ant-design/icons";
+import React, { useEffect } from "react";
 import {resetRegistrationState, signUpUser} from "../redux/reducers/userSlice"
-import { Button, Checkbox, Form, Input, Select, message ,Tag,
-  
-  Switch,
-  TreeSelect,} from "antd";
+import { Button, Form, Input, Select} from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { LOCAL_STORAGE_KEY_TOKEN, LOCAL_STORAGE_KEY_USER  } from "../const/const";
@@ -18,6 +14,7 @@ if (process.env.NODE_ENV === "production") {
   api_url = process.env.REACT_APP_PROD_API_URL;
 }
 const Signup = () => {
+
   const dispatch = useDispatch();
   const history = useHistory();
   //const [img, setImg] = useState("");
@@ -53,18 +50,6 @@ const Signup = () => {
 
         }
     }, [success, history]);
-
-
-    // useEffect(()=>{
-    //
-    //     dispatch(fetchLocations());
-    //     console.log("REGISTER USER "+JSON.stringify(registerUser.success))
-    //     console.log("LOCATIONS"+JSON.stringify(locations));
-    // },[])
-
-
-
-    //const {locations} = useSelector((state)=>state.locationReducer);
 
 
   return (
@@ -152,7 +137,7 @@ const Signup = () => {
 
                 {/* Back to Log In Link */}
                 <Link to="log_in">
-                    <div style={{color:"red"}}>I you already have an account Go to Sign Up </div>
+                    <div style={{color:"red"}}>If you already have an account Go to Login </div>
                 </Link>
               </Form>
             </div>

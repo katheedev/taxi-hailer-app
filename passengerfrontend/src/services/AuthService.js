@@ -8,9 +8,10 @@ class AuthServices {
     return api_request.post("/api/v1/passenger/registration", data);
 
   }
-  // getAllUser() {
-  //   return api_request.get("/users");
-  // }
+
+  editUser(data){
+    return api_request.post("/api/v1/passenger/edit", data);
+  }
 
 }
 

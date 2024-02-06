@@ -16,7 +16,7 @@ const LogIn = () => {
 
   useEffect(() => {
     if (user) {
-      console.log("USER DETAILA"+ JSON.stringify(user))
+      console.log("USER DETAIL"+ JSON.stringify(user))
       console.log("TOKEN "+token)
       localStorage.setItem(LOCAL_STORAGE_KEY_USER, JSON.stringify(user));
       localStorage.setItem(LOCAL_STORAGE_KEY_TOKEN, token);

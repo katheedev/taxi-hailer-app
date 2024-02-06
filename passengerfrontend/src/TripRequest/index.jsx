@@ -4,7 +4,8 @@ import {fetchLocations} from "../redux/reducers/locationSlice";
 import React, {useEffect} from "react";
 import {useHistory} from "react-router-dom";
 import {Button, Form, Select} from "antd";
-import {createTripRequest} from "../redux/reducers/tripRequestSlice";
+import {createTripRequest, resetRequestState} from "../redux/reducers/tripRequestSlice";
+import './triprequest.css';
 
 const { Option } = Select;
 
@@ -17,38 +18,35 @@ const TripRequest = () => {
     const {
         request,success
     } = useSelector((state) => state.tripRequestReducer.getRequest);
-    console.log("success:", useSelector((state) => state.tripRequestReducer.getRequest));
 
     const {locations} = useSelector((state)=>state.locationReducer);
 
 
     useEffect(()=>{
-
         dispatch(fetchLocations());
-        // console.log("LOGIN USER "+JSON.stringify(user))
-        console.log("LOCATIONS"+JSON.stringify(locations));
-
     },[]);
 
 
-    console.log("success:", success);
+
     useEffect(() => {
-       // console.log("request:", request);
-        //console.log("success:", success);
         if (request && success) {
-            console.log("Request:",JSON.stringify(request) );
-           history.push("/trip_detail");
+            console.log("Request:",JSON.stringify(request));
+            dispatch(resetRequestState());
+            history.push("/trip_detail");
         }
-    }, [ success]);
+    }, [success]);
 
     const onFinish = (values) => {
         const data = { ...values };
         dispatch(createTripRequest(data));
-        //console.log("LOCATIONS"+JSON.stringify(request));
     };
 
     return (
-        <div>
+        <section className="triprequest">
+            <div style={{ marginRight: 120 }} className="container mt-5">
+                <div className="row">
+                    <div className="col-md-8 offset-md-3 card p-5">
+
             <h1>Trip Request</h1>
             <Form form={form} onFinish={onFinish} autoComplete="off" layout="vertical">
                 <Form.Item
@@ -82,12 +80,15 @@ const TripRequest = () => {
                 </Form.Item>
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit">
+                    <Button type="primary" htmlType="submit" style={{ backgroundColor: 'lightseagreen' }}>
                         Create Trip Request
                     </Button>
                 </Form.Item>
             </Form>
-        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     );
 
 

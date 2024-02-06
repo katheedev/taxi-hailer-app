@@ -1,16 +1,16 @@
 import {useDispatch, useSelector} from "react-redux";
 import {useHistory} from "react-router-dom";
 import React, {useEffect, useState} from "react";
-import {fetchTripDetails} from "../redux/reducers/tripDetailSlice";
+import {fetchTripDetails, resetTripDetails} from "../redux/reducers/tripDetailSlice";
 import {resetRequestState } from "../redux/reducers/tripRequestSlice";
-import { Table} from "antd";
-
-
+import { Table, Modal,Spin} from "antd";
+import './tripdetail.css';
 
 const TripDetail = () => {
 
     const dispatch = useDispatch();
     const history = useHistory();
+    const [isModalOpen, setIsModalOpen] = useState([true, true]);
 
     const {
         current_trip,error, success
@@ -22,18 +22,25 @@ const TripDetail = () => {
     useEffect(() => {
         // Redirect to trip_request page on error
         if (error) {
-            dispatch(resetRequestState())
+            console.log("Error:",JSON.stringify(error) );
+            //dispatch(resetRequestState())
+            dispatch(resetTripDetails());
             history.push("/trip_request");
         }
     }, [error, history]);
 
+    useEffect(()=>{
+
+        if(success && current_trip.id!=null){
+            setLoading(false);
+        }
+    },[current_trip])
 
 
     useEffect(() => {
         const fetchTripDetailsData = async () => {
             try {
                 await dispatch(fetchTripDetails());
-                setLoading(false);
             } catch (error) {
                 console.error("Error fetching trip details:", error);
             }
@@ -67,7 +74,7 @@ const TripDetail = () => {
         },
         {
             title: "Fair",
-            dataIndex: "totalFair",
+            dataIndex: "totalFare",
             key: "totalFare",
         },
         {
@@ -91,7 +98,17 @@ const TripDetail = () => {
                 columns={columns}
                 bordered
             />
-
+            <Modal
+                className="my-modal"
+                title="WAITING FOR DRIVER"
+                open={loading}
+                style={{textAlign:"center"}}
+                cancelText=""
+                footer={null}
+                closable={false}
+            >
+                <Spin  size="large">    </Spin>
+            </Modal>
         </div>
     );
 };

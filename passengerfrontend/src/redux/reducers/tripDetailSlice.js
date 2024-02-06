@@ -26,7 +26,12 @@ export const fetchTripDetails = createAsyncThunk(
 const tripDetailSlice = createSlice({
     name: "currentTrip",
     initialState,
-    reducers: {},
+    reducers: {resetTripDetails:(state,action)=>{
+            state.current_trip = null;
+            state.loading = false;
+            state.success = false;
+            state.error = null;
+        }},
     extraReducers: (builder) => {
         builder.addCase(fetchTripDetails.pending, (state) => {
             state.loading = true;
@@ -51,4 +56,4 @@ const tripDetailSlice = createSlice({
 });
 
 export default tripDetailSlice.reducer;
-export const { currentTrip } = tripDetailSlice.actions;
+export const { currentTrip,resetTripDetails } = tripDetailSlice.actions;

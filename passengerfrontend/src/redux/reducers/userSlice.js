@@ -19,18 +19,9 @@ const initialState = {
     error: false,
     success: false
   },
-  allUsers: {
-    result: null,
-    loading: false,
-    error: false,
-    success: false
-
-  }
 
 }
 
-
-// get all plans list
 
 export const userLogIn = createAsyncThunk("auth/login", async (_, thunkApi) => {
 
@@ -54,6 +45,16 @@ export const signUpUser = createAsyncThunk("auth/register", async (_, thunkApi) 
   }
 });
 
+export const editUser = createAsyncThunk("auth/edit", async (_, thunkApi) => {
+
+  try {
+    const data = await AuthService.editUser(_)
+    return data;
+  } catch (error) {
+    return thunkApi.rejectWithValue(error);
+  }
+});
+
 
 
 
@@ -65,13 +66,9 @@ export const authSlice = createSlice({
 
     resetRegistrationState: (state) => {
       state.registerUser.success = false;
-      //  state.getUser.user = action.payload?.data.details;
-      //  state.getUser.token = action.payload?.data.token;
       state.registerUser.loading = false;
       state.registerUser.error = false;
     },
-
-
 
 
     logOutUser: (state, action) => {
@@ -113,6 +110,7 @@ export const authSlice = createSlice({
       state.getUser.error = action.payload?.response?.data?.message;
 
     });
+
     // user registation 
     builder.addCase(signUpUser.pending, (state) => {
       state.registerUser.loading = true;
@@ -125,8 +123,6 @@ export const authSlice = createSlice({
 
       message.success("successfully registered  ")
       state.registerUser.success = true;
-      //state.getUser.user = action.payload?.data.details;
-      //state.getUser.token = action.payload?.data.token;
       state.registerUser.loading = false;
       state.registerUser.error = false;
     });
@@ -142,13 +138,36 @@ export const authSlice = createSlice({
 
     });
 
+
+    //edit user
+    builder.addCase(editUser.pending, (state) => {
+      state.getUser.loading = true;
+      state.getUser.success = false;
+      state.getUser.error = false;
+
+
+    });
+    builder.addCase(editUser.fulfilled, (state, action) => {
+
+      message.success("User detail update successfully ")
+      state.getUser.success = true;
+      state.getUser.user = action.payload?.passenger;
+      //state.getUser.token = action.payload?.token;
+      state.getUser.loading = false;
+      state.getUser.error = false;
+    });
+    builder.addCase(editUser.rejected, (state, action) => {
+      const errorMessages = action.payload?.response?.data?.errors || [];
+      message.error(errorMessages.length > 0 ? errorMessages.join(', ') : "something went wrong try again");
+
+      state.getUser.success = false;
+      state.getUser.loading = false;
+      state.getUser.error = action.payload?.response?.data?.message;
+
+    });
   },
 })
 
-// Action creators are generated for each case reducer function
-// export const { } = productSlice.actions
-
-// export default productSlice.reducer
 
 const { actions, reducer } = authSlice;
 export const { logOutUser,resetRegistrationState } = actions;

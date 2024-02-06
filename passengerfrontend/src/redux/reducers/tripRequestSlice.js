@@ -32,11 +32,10 @@ export const tripRequestSlice = createSlice({
             state.getRequest.success = false;
             state.getRequest.error = false;
             state.getRequest.request = null;
-
         }
     },
     extraReducers: (builder) => {
-        // user login
+
         builder.addCase(createTripRequest.pending, (state) => {
             state.getRequest.loading = true;
             state.getRequest.success = false;

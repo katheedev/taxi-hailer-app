@@ -1,6 +1,6 @@
 
 import './App.css';
-import { Switch, Route, Link,  BrowserRouter as Router,
+import { Switch, Route, BrowserRouter as Router,
 } from "react-router-dom";
 import Signup from "./Signup";
 import LogIn from './LogIn';
@@ -8,6 +8,7 @@ import 'antd/dist/antd.css';
 import Header from "../src/PublicLayout/Header";
 import TripRequest from "./TripRequest";
 import TripDetail from "./TripDetail";
+import UserEdit from "./UserEdit";
 
 function App() {
   return (
@@ -43,6 +44,10 @@ function App() {
          <Route exact path="/trip_detail">
              <Header/>
              <TripDetail/>
+         </Route>
+         <Route exact path="/edit_user_details">
+             <Header/>
+             <UserEdit />
          </Route>
      </Switch>
    

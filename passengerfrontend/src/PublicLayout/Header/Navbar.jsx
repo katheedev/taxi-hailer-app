@@ -16,23 +16,7 @@ const Navbar = () => {
           </NavLink>
      
         </NavItem>
-        <NavItem>
-          {user && (user?.role === "seller" || user?.role === "admin") ? (
-            <NavLink active={location.pathname.includes("/buyer_requested_product") ? true : false}>
-              {" "}
-              <Link to="buyer_requested_product"> Buyer requested products </Link>
-            </NavLink>
-          ) : null}
-        </NavItem>
 
-        {token ? (
-          <NavItem active={location.pathname.includes("/deshboard") ? true : false}>
-            <NavLink>
-              {" "}
-              <Link to="/deshboard"> Dashboard </Link>{" "}
-            </NavLink>
-          </NavItem>
-        ) : null}
       </Nav>
     </>
   );

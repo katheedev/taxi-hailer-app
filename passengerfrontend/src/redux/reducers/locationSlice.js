@@ -1,7 +1,6 @@
 // locationsSlice.js
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import ProductServices from "../../services/ProductServices";
 import LocationServices from "../../services/LocationServices";
 
 // Define the initial state
