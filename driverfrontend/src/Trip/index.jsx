@@ -14,6 +14,7 @@ const Trip = () => {
     const dispatch = useDispatch();
     const history = useHistory();
     const { loading, trip, error, success } = useSelector((state) => state.tripReducer.acceptedTrip);
+
 const [tripState,setTripState]=useState("waiting");
 const [transition,setTransition]=useState(false);
     useEffect(() => {
@@ -54,40 +55,60 @@ const [transition,setTransition]=useState(false);
                     <div className="col-md-9 offset-md-1 card p-5">
                         <Typography.Title  level={2} style={{ display: 'inline', textAlign: 'center' }}>Trip Details
                         </Typography.Title>
-                        <Space className="lottie" >
+                        <Space id="lottie" >
                             {
                             tripState ==="waiting" ?
-                            ( <Lottie animationData={waitingAnim}/>)
+                            ( <Lottie className="trans" animationData={waitingAnim}/>)
                             : tripState==="started" ?
                             (<>
-                                <Lottie animationData={transition ? startTripAnim :startTripAnim} loop={true} onComplete={handleTransition} />
+                                <Lottie className="trans" animationData={transition ? startTripAnim :startTripAnim} loop={true} onComplete={handleTransition} />
                                 {/*{transition ? <Lottie animationData={startTripAnim} on /> :<></>}*/}
                             </> )
                             :tripState==="ended" ?
-                            <Lottie animationData={endTripAnim }/>
+                            <Lottie className="trans" animationData={endTripAnim }/>
                             :   ( <Lottie animationData={waitingAnim}/>)
 
                         }
+
                         </Space>
 
-                        <Typography.Text  style={{ display: 'inline', textAlign: 'right',margin:'' }}>
-                            {tripState === "waiting" ? "Passenger is waiting. Go to Pick up locations" : tripState === "started" ? "Go to Destination" : tripState === "ended" ? "Destination reached" : tripState === "completed" ? "Trip is completed" : ""}
-                        </Typography.Text>
 
-                        <Descriptions bordered>
-
-                            <Descriptions.Item label="Passenger Name">{trip.passengerName}</Descriptions.Item>
-                            <Descriptions.Item label="Pickup Location">{trip.pickUpLocation.description}</Descriptions.Item>
-                            <Descriptions.Item label="Destination">{trip.destination.description}</Descriptions.Item>
-                            <Descriptions.Item label="Total Fare">{trip.totalFare}</Descriptions.Item>
-                            <Descriptions.Item label="Accepted Time">{moment( trip.acceptedTime).format('DD-MM YYYY, HH:mm:ss ')}</Descriptions.Item>
-                            {trip.startTime ? (<Descriptions.Item label="Start Time">{moment(trip.startTime).format('DD-MM YYYY, HH:mm:ss ')}</Descriptions.Item>):<></>}
-                            {trip.endTime ? (<Descriptions.Item label="End Time">{moment(trip.endTime).format('DD-MM YYYY, HH:mm:ss ')}</Descriptions.Item>):<></>}
-                            {trip.paidTime ? (<Descriptions.Item label="Paid Time">{moment(trip.paidTime).format('DD-MM YYYY, HH:mm:ss ')}</Descriptions.Item>):<></>}
-
-
-                            {/* Add other details as needed */}
+                        <Typography.Title level={5}  style={ {color:"rgb(14 27 72)" ,textAlign: 'center',margin:'0px 0px 20px 0px' }}>
+                            {tripState === "waiting" ? "Passenger is waiting | Go to Pickup location" : tripState === "started" ? "Trip started | Go to Destination" : tripState === "ended" ? "Destination reached | Collect Cash" : tripState === "completed" ? "Trip is completed" : ""}
+                        </Typography.Title>
+                        <Descriptions bordered column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}>
+                            <Descriptions.Item label="Passenger Name" span={3}>
+                                {trip.passengerName}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Pickup Location" span={3}>
+                                {trip.pickUpLocation.description}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Destination" span={3}>
+                                {trip.destination.description}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Total Fare" span={3}>
+                                {trip.totalFare}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Accepted Time" span={3}>
+                                {moment(trip.acceptedTime).format('DD-MM YYYY, HH:mm:ss ')}
+                            </Descriptions.Item>
+                            {trip.startTime && (
+                                <Descriptions.Item label="Start Time" span={{ xl: 2, xxl: 2 }}>
+                                    {moment(trip.startTime).format('DD-MM YYYY, HH:mm:ss ')}
+                                </Descriptions.Item>
+                            )}
+                            {trip.endTime && (
+                                <Descriptions.Item label="End Time" span={{ xl: 2, xxl: 2 }}>
+                                    {moment(trip.endTime).format('DD-MM YYYY, HH:mm:ss ')}
+                                </Descriptions.Item>
+                            )}
+                            {trip.paidTime && (
+                                <Descriptions.Item label="Paid Time" span={{ xl: 2, xxl: 2 }}>
+                                    {moment(trip.paidTime).format('DD-MM YYYY, HH:mm:ss ')}
+                                </Descriptions.Item>
+                            )}
                         </Descriptions>
+
                         <div className="trip-actions">
                             <Button type="primary" onClick={handleStartTrip} disabled={loading || trip.status !== 0}>
                                 Start Trip
