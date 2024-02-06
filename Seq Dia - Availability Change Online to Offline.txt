@@ -1,0 +1,10 @@
+title Availability change from Online to Offline
+
+autonumber
+
+DriverApp->DriverService: Change availability to offline
+DriverService->DriverService: Set driver status to OFFLINE
+
+loop through assigned requests
+    DriverService->DriverService: Reject assigned trip request
+end

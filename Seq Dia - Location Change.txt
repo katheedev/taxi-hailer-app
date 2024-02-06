@@ -1,0 +1,31 @@
+
+title Location Change
+
+participant DriverApp
+participant DriverService
+
+autonumber
+
+    DriverApp->DriverService: Change location to New_Location
+    DriverService->DriverService: Set new location for the driver
+    alt New_Location is different from current location
+    group call offline function
+        DriverService->DriverService: Set driver status to OFFLINE
+        loop through assigned requests
+            DriverService->DriverService: Reject assigned trip request
+        end
+
+        end
+        DriverService->DriverService: Update driver location to New_Location
+            group call online function
+
+        DriverService->DriverService: Set driver status to IDLE
+        DriverService->DriverService: Fetch incomplete trip requests from other drivers
+        DriverService->DriverService: Create new requests for incomplete trips in current location
+        end
+        DriverService->DriverApp: Location changed successfully
+    else New_Location is the same as current location
+
+        DriverService->DriverApp: Error: Choose a different location
+    end
+

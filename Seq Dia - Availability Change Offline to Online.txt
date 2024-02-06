@@ -1,0 +1,11 @@
+participant DriverApp
+participant DriverService
+
+autonumber
+
+DriverApp->DriverService: Change availability to online
+DriverService->DriverService: Set driver status to IDLE
+DriverService->DriverService: Fetch incomplete trip requests from other drivers
+DriverService->DriverService: Create new requests for incomplete trips in current location
+
+ DriverService->DriverApp: Send available trip request
