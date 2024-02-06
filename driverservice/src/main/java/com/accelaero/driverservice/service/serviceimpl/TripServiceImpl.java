@@ -3,6 +3,7 @@ package com.accelaero.driverservice.service.serviceimpl;
 import com.accelaero.driverservice.entity.*;
 import com.accelaero.driverservice.exception.InvalidInputException;
 import com.accelaero.driverservice.exception.InvalidTripAccept;
+import com.accelaero.driverservice.producer.EventProducer;
 import com.accelaero.driverservice.repository.*;
 import com.accelaero.driverservice.responsedto.CommonResponse;
 import com.accelaero.driverservice.exception.LocationNotFound;
@@ -16,6 +17,7 @@ import com.accelaero.driverservice.status.PaymentStatus;
 import com.accelaero.driverservice.status.TempTripRequestStatus;
 import com.accelaero.driverservice.status.TripStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,15 +41,19 @@ import java.util.stream.Collectors;
     private final TempTripRequestRepository tempTripRequestRepository;
     private final TripRepository tripRepository;
     private final PaymentRepository paymentRepository;
+    private final EventProducer<TripResponseReqDto> tripResponseProducer;
 
+    @Value("${spring.kafka.order.topic.trip-response}")
+    private String tripResponseTopic;
     @Autowired
-    public TripServiceImpl(LocationRepository locationRepository, UserRepository userRepository, UserService userService, TempTripRequestRepository tempTripRequestRepository, TripRepository tripRepository, PaymentRepository paymentRepository) {
+    public TripServiceImpl(LocationRepository locationRepository, UserRepository userRepository, UserService userService, TempTripRequestRepository tempTripRequestRepository, TripRepository tripRepository, PaymentRepository paymentRepository, EventProducer<TripResponseReqDto> tripResponseProducer) {
         this.locationRepository = locationRepository;
         this.userRepository = userRepository;
         this.userService = userService;
         this.tempTripRequestRepository = tempTripRequestRepository;
         this.tripRepository = tripRepository;
         this.paymentRepository = paymentRepository;
+        this.tripResponseProducer = tripResponseProducer;
     }
 
 
@@ -86,8 +93,11 @@ import java.util.stream.Collectors;
     }
 
     @Override
-    public void handleOfflineStatusChange(User user1) {
+    public void handleOfflineStatusChange(User user1) throws ExecutionException, InterruptedException {
         List<TempTripRequest> tempTripReqList = this.tempTripRequestRepository.findByDriverId(user1.getId());
+        for(TempTripRequest t :tempTripReqList){
+            handleRejectTripRequest(t.getId());
+        }
         this.tempTripRequestRepository.deleteAllInBatch(tempTripReqList);
     }
 
@@ -217,28 +227,28 @@ import java.util.stream.Collectors;
         return response;
     }
     @Override
-    public TempTripRequest handleRejectTripRequest(long tempTripRequestId) {
+    public TempTripRequest handleRejectTripRequest(long tempTripRequestId) throws ExecutionException, InterruptedException {
         User user = userService.getLoggedInDriver();
         TempTripRequest tempTripRequest=  this.tempTripRequestRepository.findByIdAndDriverId(tempTripRequestId,user.getId()).orElseThrow(()->new EntityNotFoundException("Temp Request Not Found"));
         tempTripRequest.setStatus(TempTripRequestStatus.REJECTED.getValue());
         this.tempTripRequestRepository.save(tempTripRequest);
-        
 
         List<TempTripRequest> requests = this.tempTripRequestRepository.findByTripRequestIdAndStatus(tempTripRequest.getTripRequestId(),TempTripRequestStatus.REQUESTED.getValue());
         if(requests.isEmpty()){
             requests = this.tempTripRequestRepository.findByTripRequestIdAndStatus(tempTripRequest.getTripRequestId(),TempTripRequestStatus.REJECTED.getValue());
             this.tempTripRequestRepository.deleteAllInBatch(requests);
-            TempTripRequest newT = new TempTripRequest();
-            newT.setTripRequestId(tempTripRequest.getTripRequestId());
-            newT.setTotalFare(tempTripRequest.getTotalFare());
-            newT.setPassengerName(tempTripRequest.getPassengerName());
-            newT.setDestinationName(tempTripRequest.getDestinationName());
-            newT.setDriverId(tempTripRequest.getDriverId());
-            newT.setPickupLocationName(tempTripRequest.getPickupLocationName());
+            TripResponseReqDto busyResponse = new TripResponseReqDto();
+            busyResponse.setStatus(TripStatus.ALL_DRIVERS_BUSY.getValue());
+            busyResponse.setStatusMessage("ALL DRIVERS ARE BUSY");
+            busyResponse.setPassengerId(tempTripRequest.getPassengerId());
+            busyResponse.setTripRequestId(tempTripRequest.getTripRequestId());
+            busyResponse.setPassengerName(tempTripRequest.getPassengerName());
+            busyResponse.setDriverId(tempTripRequest.getDriverId());
+            busyResponse.setTotalFare(tempTripRequest.getTotalFare());
+            //busyResponse.setPickupLocationName(tempTripRequest.getPickupLocationName());
+            //busyResponse.setDestinationName(tempTripRequest.getDestinationName());
+            tripResponseProducer.send(busyResponse,tripResponseTopic);
 
-            newT.setStatus(TripStatus.ALL_DRIVERS_BUSY.getValue());
-            newT.setPassengerId(tempTripRequest.getPassengerId());
-            return newT;
         }
         return tempTripRequest;
 
@@ -283,7 +293,7 @@ import java.util.stream.Collectors;
     }
 
     @Override
-    public CommonResponse availabilityChange(String availability) {
+    public CommonResponse availabilityChange(String availability) throws ExecutionException, InterruptedException {
         User user = userService.getLoggedInDriver();
         if(availability.equalsIgnoreCase("online") && user.getStatus()==DriverStatus.OFFLINE.getValue()) {
             user.setStatus(DriverStatus.IDLE.getValue());
@@ -298,11 +308,24 @@ import java.util.stream.Collectors;
             throw new InvalidInputException("Invalid Availability Status");
         }
 
-        userRepository.save(user);
+        this.userRepository.save(user);
         return new CommonResponse("Status Successfully Changed",0);
 
     }
+    @Override
+    public CommonResponse locationChange(String name) throws ExecutionException, InterruptedException {
+        User user  =userService.getLoggedInDriver();
+        Location currentLocation = this.locationRepository.findByName(name).orElseThrow(()->new LocationNotFound("Location Not Found"));
+        if(user.getCurrentLocationName().equalsIgnoreCase(currentLocation.getName())){
+            throw new InvalidInputException("Choose a different location");
+        }
 
+        user.setCurrentLocationName(currentLocation.getName());
+        this.userRepository.save(user);
+        handleOfflineStatusChange(user);
+        handleOnlineStatusChange(user);
+        return  new CommonResponse("Current Location Changed to "+currentLocation.getName(),200);
+    }
 
 
 

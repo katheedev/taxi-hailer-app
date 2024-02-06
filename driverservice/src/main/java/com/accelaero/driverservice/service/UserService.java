@@ -23,7 +23,6 @@ public interface UserService {
     User getLoggedInDriver();
 
 
-    CommonResponse locationChange (String name) ;
 
     User getUserByEmail(String email);
     }

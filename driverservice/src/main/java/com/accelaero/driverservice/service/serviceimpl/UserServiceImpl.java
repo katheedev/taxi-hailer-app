@@ -111,15 +111,7 @@ import javax.transaction.Transactional;
 
 
 
-    @Override
-    public CommonResponse locationChange(String name) {
-        User user  = getLoggedInDriver();
-        Location currentLocation = this.locationRepository.findByName(name).orElseThrow(()->new LocationNotFound("Location Not Found"));
 
-        user.setCurrentLocationName(currentLocation.getName());
-        this.userRepository.save(user);
-        return  new CommonResponse("Current Location Changed to "+currentLocation.getName(),200);
-    }
 
     @Override
     public User getUserByEmail(String email) {
