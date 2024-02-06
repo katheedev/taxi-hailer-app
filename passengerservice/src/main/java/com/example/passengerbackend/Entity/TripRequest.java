@@ -12,7 +12,6 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Table(name= "trip_request")
-@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 public class TripRequest {
     @Id

@@ -12,7 +12,6 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name= "trip_response")
-@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 public class TripResponse {
     @Id

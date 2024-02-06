@@ -48,6 +48,7 @@ public class TripController {
                                                              Errors errors) throws ExecutionException, InterruptedException {
 
         TripRequestResDTO tripRequestRes=  tripService.createTripRequest(tripRequestReqDTO);
+        //send trip request response to kafka topic
         tripEventProducer.send(tripRequestRes,trip_request_topic);
         return new ResponseEntity<>(tripRequestRes, HttpStatus.CREATED);
     }

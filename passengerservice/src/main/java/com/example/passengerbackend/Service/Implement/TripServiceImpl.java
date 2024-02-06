@@ -59,8 +59,8 @@ public class TripServiceImpl implements TripService {
             throw new InvalidTripRequest("Cannot Request for new Trip while there's an ongoing trip");
         }
 
-        Location destination = locationRepo.findById(tripRequestDto.getDestinationId()).orElseThrow(() -> new PassengerAlreadyExist("Invalid destination"));
-        Location pickUpLocation = locationRepo.findById(tripRequestDto.getPickUpLocationId()).orElseThrow(() -> new PassengerAlreadyExist("Invalid pickUpLocation"));
+        Location destination = locationRepo.findById(tripRequestDto.getDestinationId()).orElseThrow(() -> new InvalidTripRequest("Invalid destination"));
+        Location pickUpLocation = locationRepo.findById(tripRequestDto.getPickUpLocationId()).orElseThrow(() -> new InvalidTripRequest("Invalid pickUpLocation"));
         TripRequest tripRequest = new TripRequest();
 
         tripRequest.setPickUpLocation_id(pickUpLocation.getId());
@@ -71,32 +71,34 @@ public class TripServiceImpl implements TripService {
 
         passenger.getTripRequests().add(tripRequest);
         passenger.setStatus(PassengerStatus.REQUEST.getValue());
+        //saving the updated passenger entity to the database
         passenger = passengerRepo.save(passenger);
         return getlatestTrip(passenger);
     }
 
-    private double calculateDistance(LocationResDTO A, LocationResDTO B) {
-
-        double lat1 = Math.toRadians(A.getLatitude());
-        double lon1 = Math.toRadians(A.getLongitude());
-        double lat2 = Math.toRadians(B.getLatitude());
-        double lon2 = Math.toRadians(B.getLongitude());
-
-        double dLat = lat2 - lat1;
-        double dLon = lon2 - lon1;
-
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(lat1) * Math.cos(lat2) *
-                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return (double) Math.round(EARTH_RADIUS * c * 30 * 100) / 100; // Distance times per km travel cost
-    }
+//    private double calculateDistance(LocationResDTO A, LocationResDTO B) {
+//
+//        double lat1 = Math.toRadians(A.getLatitude());
+//        double lon1 = Math.toRadians(A.getLongitude());
+//        double lat2 = Math.toRadians(B.getLatitude());
+//        double lon2 = Math.toRadians(B.getLongitude());
+//
+//        double dLat = lat2 - lat1;
+//        double dLon = lon2 - lon1;
+//
+//        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+//                Math.cos(lat1) * Math.cos(lat2) *
+//                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+//
+//        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+//
+//        return (double) Math.round(EARTH_RADIUS * c * 30 * 100) / 100; // Distance times per km travel cost
+//    }
 
     private TripRequestResDTO getlatestTrip(Passenger passenger) {
 
         if (!passenger.getTripRequests().isEmpty()) {
+            //get the latest trip request from the passenger trip requests list
             TripRequest tripRequest = passenger.getTripRequests().get(passenger.getTripRequests().size() - 1);
             TripRequestResDTO tripResponse = new TripRequestResDTO();
 
@@ -106,7 +108,7 @@ public class TripServiceImpl implements TripService {
             tripResponse.setTripRequestId(tripRequest.getId());
             tripResponse.setPassengerName(passenger.getFirstName());
             tripResponse.setStatus(tripResponse.getStatus());
-            tripResponse.setTotalFare(calculateDistance(tripResponse.getPickUpLocation(), tripResponse.getDestination()));
+            tripResponse.setTotalFare(tripResponse.getTotalFare());
             return tripResponse;
         }
         return new TripRequestResDTO();
@@ -129,18 +131,26 @@ public class TripServiceImpl implements TripService {
         return null;
     }
 
+
+
+    /*------------------------------------------getting trip response from driver----------------------------------------------*/
+
     @Override
     public TripResponse handleTripResponse(TripResponseReqDto tripResponseReqDto) {
+        //fetching a Passenger entity from the database based on the passengerId obtained from the tripResponseReqDto
         Passenger user = this.passengerRepo.findById(tripResponseReqDto.getPassengerId()).get();
 
         TripRequest tripRequest = user.getTripRequests()
                 .stream()
+                //get the trip request id related to the trip response
                 .filter(tr -> tr.getId().equals(tripResponseReqDto.getTripRequestId()))
                 .findFirst().get();
 
         TripResponse newResponse = null;
 
+        //get the trip status from the received trip response
         TripStatus tripStatus = TripStatus.fromValue(tripResponseReqDto.getStatus());
+        //ensuring that the tripStatus is not null before proceeding switch statement
         switch (Objects.requireNonNull(tripStatus)) {
             case ALL_DRIVERS_BUSY:
                 tripRequest.setStatus(TripRequestStatus.REJECTED.getValue());
@@ -157,6 +167,7 @@ public class TripServiceImpl implements TripService {
             case ACCEPTED:
                 tripRequest.setStatus(TripRequestStatus.ACCEPTED.getValue());
                 newResponse = convertToTripResponse(tripResponseReqDto);
+                //save this new response into TripResponse entity
                 newResponse = this.tripResponseRepo.save(newResponse);
 
                 user.setStatus(PassengerStatus.WAITING.getValue());
@@ -167,7 +178,7 @@ public class TripServiceImpl implements TripService {
                 user.setStatus(PassengerStatus.MOVE.getValue());
                 newResponse = convertToTripResponse(tripResponseReqDto);
                 TripResponse started = this.tripResponseRepo.findByTripRequestId(newResponse.getTripRequestId());
-                newResponse.setId(started.getId());
+                newResponse.setId(started.getId()); //for update
                 newResponse = this.tripResponseRepo.save(newResponse);
 
                 log.error("Trip Started: {}");
@@ -204,6 +215,7 @@ public class TripServiceImpl implements TripService {
         Passenger user = passengerService.getLoggedInPassenger();
         TripResponse response = new TripResponse();
         if (user.getStatus() == PassengerStatus.IDLE.getValue()) {
+            //find the most recent TripRequest associated with a specific Passenger based on the id in descending order.
             this.tripRequestRepo.findFirstByPassengerIdOrderByIdDesc(user.getId()).ifPresent(
                     (tripRequest) -> {
                         if (tripRequest.getStatus() == TripRequestStatus.REJECTED.getValue()) {
@@ -224,6 +236,7 @@ public class TripServiceImpl implements TripService {
     }
 
     private TripResponse convertToTripResponse(TripResponseReqDto tripResponseReqDto) {
+        //mapped TripResponseReqDto detail into TripResponse entity
         TripResponse tripResponse = new TripResponse();
         tripResponse.setTripId(tripResponseReqDto.getTripId());
         tripResponse.setTripRequestId(tripResponseReqDto.getTripRequestId());

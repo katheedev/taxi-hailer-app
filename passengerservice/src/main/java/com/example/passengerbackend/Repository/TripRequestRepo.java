@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface TripRequestRepo extends JpaRepository<TripRequest,Long> {
 
-
+    //find the most recent TripRequest associated with a specific Passenger based on the id in descending order.
     Optional<TripRequest> findFirstByPassengerIdOrderByIdDesc(Long passenger_id);
 }
