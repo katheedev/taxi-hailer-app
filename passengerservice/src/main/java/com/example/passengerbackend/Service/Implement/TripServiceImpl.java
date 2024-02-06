@@ -34,8 +34,8 @@ import java.util.Optional;
 public class TripServiceImpl implements TripService {
 
     private static final Logger log = LoggerFactory.getLogger(TripServiceImpl.class);
-    private static final double EARTH_RADIUS = 6371; // Earth's radius in kilometers
-    private static final DecimalFormat df = new DecimalFormat("0.00");
+//    private static final double EARTH_RADIUS = 6371; // Earth's radius in kilometers
+//    private static final DecimalFormat df = new DecimalFormat("0.00");
     private final TripRequestRepo tripRequestRepo;
     private final PassengerRepo passengerRepo;
     private final PassengerService passengerService;
