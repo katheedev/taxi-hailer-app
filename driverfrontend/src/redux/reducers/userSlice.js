@@ -3,6 +3,7 @@ import { LOCAL_STORAGE_KEY_TOKEN, LOCAL_STORAGE_KEY_USER } from "../../const/con
 import AuthService from "../../services/AuthService";
 
 import { message } from "antd"
+import LocationServices from "../../services/LocationServices";
 
 
 const initialState = {
@@ -60,6 +61,17 @@ export const editUser = createAsyncThunk("auth/edit", async (_, thunkApi) => {
   }
 });
 
+export const locationChange = createAsyncThunk(
+    "auth/locationChange",
+    async (_, thunkApi) => {
+      try {
+        const data = await LocationServices.locationChange(_)
+        return data;
+      } catch (error) {
+        return thunkApi.rejectWithValue(error);
+      }
+    }
+);
 
 
 
@@ -102,6 +114,8 @@ export const authSlice = createSlice({
       message.success("successfully login ")
       state.getUser.success = true;
       state.getUser.user = action.payload?.user;
+      localStorage.setItem(LOCAL_STORAGE_KEY_USER, JSON.stringify(action.payload?.user));
+      localStorage.setItem(LOCAL_STORAGE_KEY_TOKEN, action.payload?.token);
       state.getUser.token = action.payload?.token;
       state.getUser.loading = false;
       state.getUser.error = false;
@@ -152,6 +166,9 @@ export const authSlice = createSlice({
 
       message.success("Driver details updated  ")
         state.getUser.user = action.payload;
+      localStorage.setItem(LOCAL_STORAGE_KEY_USER, JSON.stringify(action.payload));
+
+
       //  state.getUser.token = action.payload?.data.token;
     });
     builder.addCase(editUser.rejected, (state, action) => {
@@ -160,7 +177,18 @@ export const authSlice = createSlice({
 
     });
 
+    builder.addCase(locationChange.pending, (state) => {
 
+    });
+    builder.addCase(locationChange.fulfilled, (state, action) => {
+      message.success("Location changed successfully");
+      state.getUser.user = action.payload
+      localStorage.setItem(LOCAL_STORAGE_KEY_USER, JSON.stringify(action.payload));
+    });
+    builder.addCase(locationChange.rejected, (state, action) => {
+      const errorMessages = action.payload?.response?.data?.errors || [];
+      message.error(errorMessages.length > 0 ? errorMessages.join(', ') : "something went wrong try again");
+    });
   },
 })
 

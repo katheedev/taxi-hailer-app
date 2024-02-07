@@ -24,17 +24,7 @@ export const fetchLocations = createAsyncThunk(
         }
     }
 );
-export const locationChange = createAsyncThunk(
-    "locations/locationChange",
-    async (_, thunkApi) => {
-        try {
-            const data = await LocationServices.locationChange(_)
-            return data;
-        } catch (error) {
-            return thunkApi.rejectWithValue(error);
-        }
-    }
-);
+
 
 // Create a slice for the locations
 const locationsSlice = createSlice({
@@ -58,16 +48,7 @@ const locationsSlice = createSlice({
             state.success = false;
             state.error = action.payload;
         });
-        builder.addCase(locationChange.pending, (state) => {
 
-        });
-        builder.addCase(locationChange.fulfilled, (state, action) => {
-            message.success("Location changed successfully");
-        });
-        builder.addCase(locationChange.rejected, (state, action) => {
-            const errorMessages = action.payload?.response?.data?.errors || [];
-            message.error(errorMessages.length > 0 ? errorMessages.join(', ') : "something went wrong try again");
-        });
     },
 });
 

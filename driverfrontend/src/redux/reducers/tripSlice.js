@@ -107,6 +107,11 @@ export const tripSlice = createSlice({
       state.acceptedTrip.trip = action.payload;
       state.acceptedTrip.loading = false;
       state.acceptedTrip.error = false;
+
+      state.tripRequests.trip=[];
+      state.tripRequests.loading = true;
+      state.tripRequests.success = false;
+      state.tripRequests.error = false;
     });
     builder.addCase(acceptTrip.rejected, (state, action) => {
       message.error(action.payload?.response?.data?.message || "Something went wrong. Please try again");

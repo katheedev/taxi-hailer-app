@@ -1,7 +1,8 @@
 import React, {useEffect, useRef, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { fetchLocations, locationChange } from "../redux/reducers/locationSlice";
+import { fetchLocations } from "../redux/reducers/locationSlice";
+import { locationChange } from "../redux/reducers/userSlice";
 import {  fetchTripRequests, acceptTrip ,rejectTrip} from "../redux/reducers/tripSlice";
 import { Button, Radio, Select, Tag, Table, Space,Spin } from "antd";
 import { Typography } from 'antd';
@@ -23,7 +24,6 @@ const Home = () => {
     const history = useHistory();
 
     const { user, token } = useSelector((state) => state.userReducer.getUser);
-
 
 
 

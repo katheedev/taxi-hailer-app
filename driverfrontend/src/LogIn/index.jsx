@@ -21,8 +21,7 @@ const LogIn = () => {
 
   useEffect(() => {
     if (user) {
-      localStorage.setItem(LOCAL_STORAGE_KEY_USER, JSON.stringify(user));
-      localStorage.setItem(LOCAL_STORAGE_KEY_TOKEN, token);
+
       console.log("USER "+JSON.stringify(user));
       console.log("TOKEN"+JSON.stringify(token));
       history.push("/home");
