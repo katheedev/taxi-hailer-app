@@ -18,8 +18,7 @@ function App() {
      <Switch>
      <Route exact path="/">
             <Header/>
-           <Signup/>
-           <LogIn/>
+d           <LogIn/>
           </Route>
 
           <Route exact path="/register">
