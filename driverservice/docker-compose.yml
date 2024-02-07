@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: 'postgres:latest'
+    container_name: postgres
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: driverdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  app:
+    image: 'driverservice'
+    container_name: spring-app
+    environment:
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_SHOW_SQL: "true"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/driverdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 12345
+      SPRING_SQL_INIT_MODE: always
+      SPRING_DATASOURCE_INITIALIZE: "true"
+      SPRING_SQL_INIT_CONTINUE_ON_ERROR: "true"
+      SERVER_PORT: 8081
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_USERNAME: katheesan2017@gmail.com
+      SPRING_MAIL_PASSWORD: xyewdsaibxtypcva
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+      SPRING_KAFKA_ORDER_BOOTSTRAP_SERVERS: "${KAFKA_RESERVATION_BOOTSTRAP_SERVERS:-10.20.11.109:29093}"
+      SPRING_KAFKA_ORDER_TOPIC_TRIP_REQUEST: trip-request
+      SPRING_KAFKA_ORDER_TOPIC_TRIP_RESPONSE: trip-response
+      SPRING_KAFKA_ORDER_CONSUMER_GROUP_ID_NOTIFICATION: notification
+      SPRING_KAFKA_ORDER_CONSUMER_GROUP_ID_SERVICE: service
+    depends_on:
+      - postgres
+    ports:
+      - "8081:8081"
+volumes:
+  postgres-data:
+    driver: local
