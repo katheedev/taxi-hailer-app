@@ -92,8 +92,8 @@ public class UserController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
     @PostMapping("/location")
-    public ResponseEntity<CommonResponse> handleLocationChange(@RequestParam String name) throws ExecutionException, InterruptedException {
-        CommonResponse response = tripService.locationChange(name);
+    public ResponseEntity<User> handleLocationChange(@RequestParam String name) throws ExecutionException, InterruptedException {
+        User response = tripService.locationChange(name);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 

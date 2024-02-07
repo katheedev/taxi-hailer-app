@@ -27,6 +27,6 @@ public interface TripService {
     TempTripRequest handleRejectTripRequest(long tempTripRequestId) throws ExecutionException, InterruptedException;
 
     CommonResponse availabilityChange(String availability) throws ExecutionException, InterruptedException;
-    CommonResponse locationChange (String name) throws ExecutionException, InterruptedException;
+    User locationChange (String name) throws ExecutionException, InterruptedException;
 
 }

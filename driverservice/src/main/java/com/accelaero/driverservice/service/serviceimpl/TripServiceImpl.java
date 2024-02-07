@@ -313,7 +313,7 @@ import java.util.stream.Collectors;
 
     }
     @Override
-    public CommonResponse locationChange(String name) throws ExecutionException, InterruptedException {
+    public User locationChange(String name) throws ExecutionException, InterruptedException {
         User user  =userService.getLoggedInDriver();
         Location currentLocation = this.locationRepository.findByName(name).orElseThrow(()->new LocationNotFound("Location Not Found"));
         if(user.getCurrentLocationName().equalsIgnoreCase(currentLocation.getName())){
@@ -321,10 +321,10 @@ import java.util.stream.Collectors;
         }
 
         user.setCurrentLocationName(currentLocation.getName());
-        this.userRepository.save(user);
+        user = this.userRepository.save(user);
         handleOfflineStatusChange(user);
         handleOnlineStatusChange(user);
-        return  new CommonResponse("Current Location Changed to "+currentLocation.getName(),200);
+        return  user;
     }
 
 
