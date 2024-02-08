@@ -16,8 +16,6 @@ public class RegistrationListener implements ApplicationListener<RegistrationCom
     @Autowired
     private PassengerService passengerService;
 
-//    @Autowired
-//    private JavaMailSender mailSender;
 
     @Override
     public void onApplicationEvent(RegistrationComplete event){
