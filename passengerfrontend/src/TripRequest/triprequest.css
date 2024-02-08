@@ -11,3 +11,18 @@ input, button, select, optgroup, textarea {
 
 }
 
+/*.card{*/
+/*    display: flex;*/
+/*}*/
+
+/*.image-container {*/
+/*    flex: 1;*/
+/*    background-image: url("taxi2.jpg");*/
+/*    background-size: cover;*/
+/*    background-position: left;*/
+/*}*/
+
+/*.form-container {*/
+/*    flex: 1;*/
+/*    padding: 20px;*/
+/*}*/

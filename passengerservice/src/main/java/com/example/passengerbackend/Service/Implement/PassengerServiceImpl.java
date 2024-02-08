@@ -33,6 +33,7 @@ public class PassengerServiceImpl implements com.example.passengerbackend.Servic
 
     @Override
     public Passenger registerPassenger(RegisterReqDTO registerReqDTO) {
+        //if passenger already exist throw an error message with the email address
         if (emailExists(registerReqDTO.getEmail())) {
             throw new PassengerAlreadyExist("There is an account with that email address: "
                     + registerReqDTO.getEmail());
@@ -71,6 +72,8 @@ public class PassengerServiceImpl implements com.example.passengerbackend.Servic
         return tokenRepository.findByToken(VerificationToken);
     }
 
+
+    /*-------------------Edit passenger detail-------------------------------------------------*/
     @Override
     public PassengerEditResDTO editPassenger(PassengerEditReqDTO passengerEditReqDTO){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

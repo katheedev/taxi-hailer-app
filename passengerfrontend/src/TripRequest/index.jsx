@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {fetchLocations} from "../redux/reducers/locationSlice";
 import React, {useEffect} from "react";
 import {useHistory} from "react-router-dom";
-import {Button, Form, Select} from "antd";
+import {Button, Form, Image, Select} from "antd";
 import {createTripRequest, resetRequestState} from "../redux/reducers/tripRequestSlice";
 import './triprequest.css';
 
@@ -47,44 +47,46 @@ const TripRequest = () => {
                 <div className="row">
                     <div className="col-md-8 offset-md-3 card p-5">
 
-            <h1>Trip Request</h1>
-            <Form form={form} onFinish={onFinish} autoComplete="off" layout="vertical">
-                <Form.Item
-                    name="pickUpLocationId"
-                    label="Pickup Location"
-                    rules={[{ required: true, message: "Please select pickup location" }]}
-                >
-                    <Select placeholder="Select pickup location">
-                        {locations.map((location) => (
-                            <Option key={location.id} value={location.id}>
-                                {location.description}
-                            </Option>
-                        ))}
-                    </Select>
-                </Form.Item>
+                        <div className="form-container">
+                        <h1>Trip Request</h1>
+                        <Form form={form} onFinish={onFinish} autoComplete="off" layout="vertical" className="form-container">
+                            <Form.Item
+                                name="pickUpLocationId"
+                                label="Pickup Location"
+                                rules={[{required: true, message: "Please select pickup location"}]}
+                            >
+                                <Select placeholder="Select pickup location">
+                                    {locations.map((location) => (
+                                        <Option key={location.id} value={location.id}>
+                                            {location.description}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
 
-                <Form.Item
-                    name="destinationId"
-                    label="Destination Location"
-                    rules={[
-                        { required: true, message: "Please select destination location" },
-                    ]}
-                >
-                    <Select placeholder="Select destination location">
-                        {locations.map((location) => (
-                            <Option key={location.id} value={location.id}>
-                                {location.description}
-                            </Option>
-                        ))}
-                    </Select>
-                </Form.Item>
+                            <Form.Item
+                                name="destinationId"
+                                label="Destination Location"
+                                rules={[
+                                    {required: true, message: "Please select destination location"},
+                                ]}
+                            >
+                                <Select placeholder="Select destination location">
+                                    {locations.map((location) => (
+                                        <Option key={location.id} value={location.id}>
+                                            {location.description}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
 
-                <Form.Item>
-                    <Button type="primary" htmlType="submit" style={{ backgroundColor: 'lightseagreen' }}>
-                        Create Trip Request
-                    </Button>
-                </Form.Item>
-            </Form>
+                            <Form.Item>
+                                <Button type="primary" htmlType="submit" style={{backgroundColor: 'lightseagreen'}}>
+                                    Create Trip Request
+                                </Button>
+                            </Form.Item>
+                        </Form>
+                        </div>
                     </div>
                 </div>
             </div>

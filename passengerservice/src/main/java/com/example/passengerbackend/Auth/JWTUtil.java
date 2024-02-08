@@ -63,6 +63,8 @@ public class JWTUtil {
         }
     }
 
+
+    //Retrieves the token from the request.
     public String resolveToken(HttpServletRequest request) {
 
         String bearerToken = request.getHeader(TOKEN_HEADER);
